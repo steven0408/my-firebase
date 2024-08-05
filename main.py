@@ -1,4 +1,4 @@
-from data_fetcher import fetch_data, write_data
+from rw_data import fetch_data, write_data
 
 # 调用 fetch_data 并打印结果
 if __name__ == "__main__":
