@@ -25,7 +25,7 @@ def fetch_data():
 # 定义数据变化处理函数
 def on_data_change(event):
     if data and 'source' in data and data['source'] == 'python':
-    return
+        return
     fetch_data()
 
 # 读取现有数据
