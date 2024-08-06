@@ -16,16 +16,16 @@ ref = db.reference('texts')
 def fetch_data():
     data = ref.get()
     if data:
-        for key, value in data.items():
-            print(f"Content: {value}, Source: {value}")
-        return key
+        source = data.get('source')
+        content = data.get('content')
+        print(source, content)
     else:
         print("No data found")
 
 # 定义数据变化处理函数
 def on_data_change(event):
-    if 'source' in event.data and event.data['source'] == 'python':
-        return
+    if data and 'source' in data and data['source'] == 'python':
+    return
     fetch_data()
 
 # 读取现有数据
@@ -33,13 +33,14 @@ def initialize():
     print("Existing data:")
     fetch_data()
 
-def write_data(key, new_data):
+def write_data(new_data):
     # 向 Firebase 实时数据库写入新数据
-    ref.child(key).update(new_data)  # 使用 update 更新数据
+    ref = db.reference(f'texts/chat/{key}')
+    ref.update(new_data)  # 使用 update 更新数据
 
 # Example usage
 if __name__ == "__main__":
-    initialize()  # 读取现有数据
+    # initialize()  # 读取现有数据
 
     # 添加监听器
     print("Listening for new data...")
