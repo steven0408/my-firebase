@@ -33,7 +33,7 @@ def initialize():
     print("Existing data:")
     fetch_data()
 
-def write_data(new_data):
+def write_data(key, new_data):
     # 向 Firebase 实时数据库写入新数据
     ref = db.reference(f'texts/chat/{key}')
     ref.update(new_data)  # 使用 update 更新数据
