@@ -1,0 +1,28 @@
+name: Trigger Colab
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  trigger-colab:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install gspread oauth2client google-auth google-api-python-client
+
+    - name: Update Google Drive
+      run: |
+        python update_drive.py
