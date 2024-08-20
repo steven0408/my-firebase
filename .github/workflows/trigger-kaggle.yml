@@ -1,25 +1,80 @@
-name: Trigger Kaggle Notebook
+name: Conditional Kaggle Workflow
 
 on:
-  push:
-    paths:
-      - trigger_file.txt
+  schedule:
+    - cron: '0 0 * * *'  # 每天0点执行
 
 jobs:
-  trigger:
+  run:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Kaggle CLI
+      - name: Get day of the week
+        id: get-day
+        run: echo "dayOfWeek=$(date +'%u')" >> $GITHUB_ENV  # 1 (Monday) to 7 (Sunday)
+
+      - name: Set up Kaggle CLI for Account 1
+        if: ${{ env.dayOfWeek == '1' }}  # Monday
         run: |
           pip install kaggle
           mkdir -p ~/.kaggle
-          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME }}\",\"key\":\"${{ secrets.KAGGLE_KEY }}\"}" > ~/.kaggle/kaggle.json
+          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT1 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT1 }}\"}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
+          kaggle kernels push -p path/to/your/notebook_directory
 
-      - name: Trigger Kaggle Notebook
+      - name: Set up Kaggle CLI for Account 2
+        if: ${{ env.dayOfWeek == '2' }}  # Tuesday
         run: |
+          pip install kaggle
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT2 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT2 }}\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+          kaggle kernels push -p path/to/your/notebook_directory
+          
+      - name: Set up Kaggle CLI for Account 3
+        if: ${{ env.dayOfWeek == '3' }}  # Wednesday
+        run: |
+          pip install kaggle
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT3 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT3 }}\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+          kaggle kernels push -p path/to/your/notebook_directory
+
+      - name: Set up Kaggle CLI for Account 4
+        if: ${{ env.dayOfWeek == '4' }}  # Thursday
+        run: |
+          pip install kaggle
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT4 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT4 }}\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+          kaggle kernels push -p path/to/your/notebook_directory
+          
+      - name: Set up Kaggle CLI for Account 5
+        if: ${{ env.dayOfWeek == '5' }}  # Friday
+        run: |
+          pip install kaggle
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT5 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT5 }}\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+          kaggle kernels push -p path/to/your/notebook_directory
+
+      - name: Set up Kaggle CLI for Account 6
+        if: ${{ env.dayOfWeek == '6' }}  # Saturday
+        run: |
+          pip install kaggle
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT6 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT6 }}\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+          kaggle kernels push -p path/to/your/notebook_directory
+          
+      - name: Set up Kaggle CLI for Account 7
+        if: ${{ env.dayOfWeek == '7' }}  # Sunday
+        run: |
+          pip install kaggle
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT7 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT7 }}\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
           kaggle kernels push -p path/to/your/notebook_directory
