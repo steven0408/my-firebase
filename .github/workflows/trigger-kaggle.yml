@@ -1,0 +1,25 @@
+name: Trigger Kaggle Notebook
+
+on:
+  push:
+    paths:
+      - trigger_file.txt
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Kaggle CLI
+        run: |
+          pip install kaggle
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME }}\",\"key\":\"${{ secrets.KAGGLE_KEY }}\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+
+      - name: Trigger Kaggle Notebook
+        run: |
+          kaggle kernels push -p path/to/your/notebook_directory
