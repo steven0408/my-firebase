@@ -1,0 +1,5 @@
+kernel:
+  title: My Python Script
+  id: my-kernel-id
+  language: python
+  script: main.py
