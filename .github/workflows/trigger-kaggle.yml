@@ -22,12 +22,12 @@ jobs:
           chmod 600 ~/.kaggle/kaggle.json
 
       - name: Push Python script to Kaggle
-        if: ${{ github.event.schedule.cron == '0 0 * * *' }}  # 仅在每天0点时推送
+        if: ${{ (github.event_name == 'schedule' && github.event.schedule.cron == '0 0 * * *') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'push') }}
         run: |
-          kaggle kernels push -p .github/workflows
+          kaggle kernels push -p your-repo
 
       - name: Stop Python script
-        if: ${{ github.event.schedule.cron == '59 23 * * *' }}  # 仅在每天23:59时执行停止操作
+        if: ${{ (github.event_name == 'schedule' && github.event.schedule.cron == '59 23 * * *') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'stop') }}
         run: |
-          echo "Stopping Python script at 23:59"
-          pkill -f main.py  # 使用 pkill 通过脚本名停止 Python 脚本
+          echo "Stopping Python script"
+          pkill -f main.py
