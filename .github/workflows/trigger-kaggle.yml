@@ -1,29 +1,32 @@
-name: Conditional Kaggle Workflow
+name: Push Python Script to Kaggle and Stop Script
 
 on:
   schedule:
     - cron: '0 0 * * *'  # 每天0点执行
+    - cron: '59 23 * * *' # 每天23:59执行
 
 jobs:
-  run:
+  push-and-stop:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dayOfWeek: [1, 2, 3, 4, 5, 6, 7]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Get day of the week
-        id: get-day
-        run: echo "dayOfWeek=$(date +'%u')" >> $GITHUB_ENV  # 1 (Monday) to 7 (Sunday)
-
       - name: Set up Kaggle CLI
-        if: ${{ matrix.dayOfWeek == env.dayOfWeek }}
         run: |
           pip install kaggle
           mkdir -p ~/.kaggle
-          echo "{\"username\":\"${{ secrets['KAGGLE_USERNAME_ACCOUNT' + matrix.dayOfWeek] }}\",\"key\":\"${{ secrets['KAGGLE_KEY_ACCOUNT' + matrix.dayOfWeek] }}\"}" > ~/.kaggle/kaggle.json
+          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME }}\",\"key\":\"${{ secrets.KAGGLE_KEY }}\"}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
+
+      - name: Push Python script to Kaggle
+        if: ${{ github.event.schedule.cron == '0 0 * * *' }}  # 仅在每天0点时推送
+        run: |
           kaggle kernels push -p .github/workflows
+
+      - name: Stop Python script
+        if: ${{ github.event.schedule.cron == '59 23 * * *' }}  # 仅在每天23:59时执行停止操作
+        run: |
+          echo "Stopping Python script at 23:59"
+          pkill -f main.py  # 使用 pkill 通过脚本名停止 Python 脚本
