@@ -51,7 +51,7 @@ jobs:
       - name: Push Python script to Kaggle
         if: ${{ (github.event_name == 'schedule' && github.event.schedule.cron == '0 0 * * *') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'push') }}
         run: |
-          kaggle kernels push -p .github/workflows
+          kaggle kernels push -p my-firebase/
 
       - name: Stop Python script
         if: ${{ (github.event_name == 'schedule' && github.event.schedule.cron == '59 23 * * *') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'stop') }}
