@@ -1,5 +1,5 @@
 {
   "title": "My Python Script",
   "language": "python",
-  "script": "main.py"
+  "kernel_type": "script"
 }
