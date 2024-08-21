@@ -5,6 +5,14 @@ on:
     - cron: '0 0 * * *'  # 每天0点执行
     - cron: '59 23 * * *' # 每天23:59执行
   workflow_dispatch:  # 允许手动触发
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'push'
+        options:
+          - push
+          - stop
 
 jobs:
   push-and-stop:
