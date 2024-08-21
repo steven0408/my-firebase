@@ -2,13 +2,20 @@ import subprocess
 import sys
 
 def install(package):
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
+    try:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', file_path])
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred while installing {file_path}: {e}")
 
+whl_file_path = 'firebase_admin/firebase_admin-6.5.0-py3-none-any.whl'
+install_whl(whl_file_path)
+
+# 测试安装是否成功
 try:
     import firebase_admin
-except ImportError:
-    install('firebase_admin')
-    import firebase_admin
+    print(f"firebase_admin version: {firebase_admin.__version__}")
+except ImportError as e:
+    print(f"Error importing firebase_admin: {e}")
 
 import time
 import threading
