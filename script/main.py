@@ -8,7 +8,7 @@ def install(package):
         print(f"Error occurred while installing {file_path}: {e}")
 
 whl_file_path = 'firebase_admin/firebase_admin-6.5.0-py3-none-any.whl'
-install_whl(whl_file_path)
+install(whl_file_path)
 
 # 测试安装是否成功
 try:
