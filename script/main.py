@@ -1,8 +1,14 @@
 import subprocess
 import sys
 
-# 安装 firebase_admin
-subprocess.check_call([sys.executable, "-m", "pip", "install", "firebase_admin"])
+def install(package):
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
+
+try:
+    import firebase_admin
+except ImportError:
+    install('firebase_admin')
+    import firebase_admin
 
 import time
 import threading
