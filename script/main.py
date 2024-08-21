@@ -1,3 +1,5 @@
+!pip install firebase_admin
+
 import time
 import threading
 import firebase_admin
