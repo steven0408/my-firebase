@@ -14,11 +14,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Get day of the week
+        id: get-day
+        run: echo "dayOfWeek=$(date +'%u')" >> $GITHUB_ENV
+
       - name: Set up Kaggle CLI
         run: |
           pip install kaggle
           mkdir -p ~/.kaggle
-          echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME }}\",\"key\":\"${{ secrets.KAGGLE_KEY }}\"}" > ~/.kaggle/kaggle.json
+          echo "{\"username\":\"${{ secrets['KAGGLE_USERNAME_ACCOUNT' + env.dayOfWeek] }}\",\"key\":\"${{ secrets['KAGGLE_KEY_ACCOUNT' + env.dayOfWeek] }}\"}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
 
       - name: Push Python script to Kaggle
