@@ -2,7 +2,7 @@
   "title": "My Python Script",
   "language": "python",
   "kernel_type": "script",
-  "script": "main.py",
+  "code_file": "main.py",
   "dataset_sources": [],
   "enable_gpu": true,
   "enable_internet": true,
