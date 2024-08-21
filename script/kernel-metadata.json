@@ -2,5 +2,5 @@
   "title": "My Python Script",
   "language": "python",
   "kernel_type": "script",
-  "script": "abc.py",
+  "script": "main.py"
 }
