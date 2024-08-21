@@ -28,6 +28,7 @@ jobs:
 
       - name: Set up Kaggle CLI
         run: |
+          pip install firebase_admin
           pip install kaggle
           mkdir -p ~/.kaggle
           # 根据 dayOfWeek 选择对应的账户
