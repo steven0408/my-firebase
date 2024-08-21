@@ -22,7 +22,22 @@ jobs:
         run: |
           pip install kaggle
           mkdir -p ~/.kaggle
-          echo "{\"username\":\"${{ secrets['KAGGLE_USERNAME_ACCOUNT' + steps.get-day.outputs.dayOfWeek] }}\",\"key\":\"${{ secrets['KAGGLE_KEY_ACCOUNT' + steps.get-day.outputs.dayOfWeek] }}\"}" > ~/.kaggle/kaggle.json
+          # 根据 dayOfWeek 选择对应的账户
+          if [ "${{ env.dayOfWeek }}" == "1" ]; then
+            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT1 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT1 }}\"}" > ~/.kaggle/kaggle.json
+          elif [ "${{ env.dayOfWeek }}" == "2" ]; then
+            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT2 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT2 }}\"}" > ~/.kaggle/kaggle.json
+          elif [ "${{ env.dayOfWeek }}" == "3" ]; then
+            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT3 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT3 }}\"}" > ~/.kaggle/kaggle.json
+          elif [ "${{ env.dayOfWeek }}" == "4" ]; then
+            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT4 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT4 }}\"}" > ~/.kaggle/kaggle.json
+          elif [ "${{ env.dayOfWeek }}" == "5" ]; then
+            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT5 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT5 }}\"}" > ~/.kaggle/kaggle.json
+          elif [ "${{ env.dayOfWeek }}" == "6" ]; then
+            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT6 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT6 }}\"}" > ~/.kaggle/kaggle.json
+          elif [ "${{ env.dayOfWeek }}" == "7" ]; then
+            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT7 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT7 }}\"}" > ~/.kaggle/kaggle.json
+          fi
           chmod 600 ~/.kaggle/kaggle.json
 
       - name: Push Python script to Kaggle
