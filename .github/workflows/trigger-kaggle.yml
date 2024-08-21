@@ -22,7 +22,7 @@ jobs:
         run: |
           pip install kaggle
           mkdir -p ~/.kaggle
-          echo "{\"username\":\"${{ secrets['KAGGLE_USERNAME_ACCOUNT' + env.dayOfWeek] }}\",\"key\":\"${{ secrets['KAGGLE_KEY_ACCOUNT' + env.dayOfWeek] }}\"}" > ~/.kaggle/kaggle.json
+          echo "{\"username\":\"${{ secrets['KAGGLE_USERNAME_ACCOUNT' + steps.get-day.outputs.dayOfWeek] }}\",\"key\":\"${{ secrets['KAGGLE_KEY_ACCOUNT' + steps.get-day.outputs.dayOfWeek] }}\"}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
 
       - name: Push Python script to Kaggle
