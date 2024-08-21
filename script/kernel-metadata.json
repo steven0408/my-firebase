@@ -2,5 +2,11 @@
   "title": "My Python Script",
   "language": "python",
   "kernel_type": "script",
-  "script": "main.py"
+  "script": "main.py",
+  "dataset_sources": [],
+  "enable_gpu": true,
+  "enable_internet": true,
+  "tags": [],
+  "icon": null,
+  "is_private": true
 }
