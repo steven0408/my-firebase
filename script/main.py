@@ -5,7 +5,7 @@ from firebase_admin import credentials, db
 from chatAI import Gemini
 
 # Fetch the service account key JSON file contents
-root = 'drive/MyDrive/ColabNotebooks/python-firebase/'
+root = ''
 cred = credentials.Certificate(root + 'adminsdk.json')
 
 # Initialize the app with a service account, granting admin privileges
