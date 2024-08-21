@@ -7,7 +7,7 @@ def install(file_path):
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while installing {file_path}: {e}")
 
-whl_file_path = 'firebase_admin/firebase_admin-6.5.0-py3-none-any.whl'
+whl_file_path = '/kaggle/working/firebase_admin/firebase_admin-6.5.0-py3-none-any.whl'
 install(whl_file_path)
 
 # 测试安装是否成功
