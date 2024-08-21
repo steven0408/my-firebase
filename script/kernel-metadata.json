@@ -3,7 +3,7 @@
   "title": "Data Analysis with Python",
   "language": "python",
   "kernel_type": "script",
-  "code_file": "main.ipynb",
+  "code_file": "main.py",
   "dataset_sources": [],
   "enable_gpu": true,
   "enable_internet": true,
