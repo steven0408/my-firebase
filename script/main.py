@@ -1,7 +1,7 @@
 import subprocess
 import sys
 
-def install(package):
+def install(file_path):
     try:
         subprocess.check_call([sys.executable, '-m', 'pip', 'install', file_path])
     except subprocess.CalledProcessError as e:
