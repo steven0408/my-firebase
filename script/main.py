@@ -19,7 +19,7 @@ except ImportError as e:
 
 def install_package(package):
     """安装指定的 Python 包"""
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', package, '--network=host'])
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
 
 # 尝试导入 firebase_admin
 try:
