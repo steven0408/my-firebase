@@ -1,3 +1,23 @@
+import requests
+
+def check_internet_connection():
+    try:
+        # 尝试访问一个公开的网页
+        response = requests.get('https://www.google.com', timeout=5)
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+    except requests.ConnectionError:
+        return False
+
+if check_internet_connection():
+    print("Notebook 可以访问互联网。")
+else:
+    print("Notebook 无法访问互联网。")
+
+
+
 import subprocess
 import sys
 
