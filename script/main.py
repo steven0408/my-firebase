@@ -2,19 +2,49 @@ import requests
 
 def check_internet_connection():
     try:
-        response = requests.get('https://www.google.com', timeout=5)
+        response = requests.get('https://www.google.com', timeout=10)
         if response.status_code == 200:
+            print("网络连接正常。")
             return True
         else:
+            print(f"收到非200响应状态码: {response.status_code}")
             return False
-    except requests.ConnectionError:
+    except requests.ConnectionError as e:
+        print(f"网络连接错误: {e}")
+        return False
+    except requests.Timeout as e:
+        print(f"请求超时: {e}")
+        return False
+    except requests.RequestException as e:
+        print(f"网络请求发生异常: {e}")
         return False
 
-if check_internet_connection():
-    print("Notebook 可以访问互联网。")
-else:
-    print("Notebook 无法访问互联网。")
+check_internet_connection()
 
+import urllib.request
+
+def check_internet_connection_urllib():
+    url = 'http://www.google.com'
+    try:
+        response = urllib.request.urlopen(url, timeout=10)
+        print("网络连接正常。")
+        return True
+    except urllib.error.URLError as e:
+        print(f"网络连接错误: {e.reason}")
+        return False
+    except Exception as e:
+        print(f"网络请求发生异常: {e}")
+        return False
+
+check_internet_connection_urllib()
+
+import os
+
+def check_network_config():
+    internet_setting = os.getenv('KAGGLE_KERNEL_INTERNET')
+    print(f"Internet setting is: {internet_setting}")
+
+check_network_config()
 
 
 import subprocess
