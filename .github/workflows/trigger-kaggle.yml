@@ -53,11 +53,6 @@ jobs:
         run: |
           kaggle kernels push -p script
 
-      - name: List files in script directory
-        run: |
-          ls -R script/
-
-
       - name: Stop Python script
         if: ${{ (github.event_name == 'schedule' && github.event.schedule.cron == '59 23 * * *') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'stop') }}
         run: |
