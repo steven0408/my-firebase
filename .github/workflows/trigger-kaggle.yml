@@ -53,6 +53,9 @@ jobs:
         run: |
           kaggle kernels push -p script
 
+          # Ensure the .whl files are correctly placed
+          kaggle kernels output -p script/firebase_admin/ --download --force
+
       - name: Stop Python script
         if: ${{ (github.event_name == 'schedule' && github.event.schedule.cron == '59 23 * * *') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'stop') }}
         run: |
