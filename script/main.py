@@ -2,7 +2,6 @@ import requests
 
 def check_internet_connection():
     try:
-        # 尝试访问一个公开的网页
         response = requests.get('https://www.google.com', timeout=5)
         if response.status_code == 200:
             return True
