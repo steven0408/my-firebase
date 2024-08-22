@@ -17,6 +17,18 @@ try:
 except ImportError as e:
     print(f"Error importing firebase_admin: {e}")
 
+def install_package(package):
+    """安装指定的 Python 包"""
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
+
+# 尝试导入 firebase_admin
+try:
+    import firebase_admin
+except ImportError:
+    print("firebase_admin 未安装，正在尝试安装...")
+    install_package('firebase_admin')
+    import firebase_admin
+
 import time
 import threading
 import firebase_admin
