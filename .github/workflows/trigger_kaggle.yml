@@ -1,48 +1,48 @@
-name: Manage Kaggle Notebooks  # GitHub Actions 的名称
+name: Manage Kaggle Notebooks
 
 on:
   schedule:
-    - cron: '0 0,9,18 * * *'  # 定时任务，每天的00:00、09:00和18:00触发一次
-  workflow_dispatch:  # 允许手动触发工作流
+    - cron: '0 0,9,18 * * *'  # 定时任务
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   run-notebooks:
-    runs-on: ubuntu-latest  # 在最新的 Ubuntu 环境上运行
+    runs-on: ubuntu-latest
     env:
       KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
       KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
 
     steps:
-      - name: Checkout code  # 检出当前的代码仓库
-        uses: actions/checkout@v2  # 使用 GitHub 提供的 checkout action
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Setup Kaggle API credentials  # 设置 Kaggle API 凭证
+      - name: Setup Kaggle API credentials
         run: |
-          mkdir -p ~/.kaggle  # 创建 .kaggle 目录
-          echo "${{ secrets.KAGGLE_JSON }}" > ~/.kaggle/kaggle.json  # 将 secrets 中的 KAGGLE_JSON 写入 kaggle.json
-          chmod 600 ~/.kaggle/kaggle.json  # 设置权限，确保只有当前用户可以读取
+          mkdir -p ~/.kaggle
+          echo "${{ secrets.KAGGLE_JSON }}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
 
-      - name: Install Kaggle CLI  # 安装 Kaggle CLI 工具
+      - name: Install Kaggle CLI
         run: |
-          pip install kaggle  # 使用 pip 安装 Kaggle CLI
+          pip install kaggle
 
-      - name: Generate Timestamp  # 生成唯一的时间戳
-        id: timestamp
-        run: echo "TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV  # 将时间戳写入 GitHub 环境变量
-
-      - name: Prepare Notebook with Timestamp  # 准备带有时间戳的 Notebook 文件夹
+      - name: Prepare Notebook with Timestamp
         run: |
-          mkdir -p notebook_${{ env.TIMESTAMP }}  # 创建临时文件夹
-          cp script/main.py notebook_${{ env.TIMESTAMP }}/main.py  # 复制并重命名 Notebook 文件
-          cp script/kernel-metadata.json notebook_${{ env.TIMESTAMP }}/kernel-metadata.json  # 复制 kernel-metadata.json 文件到临时文件夹
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          mkdir -p notebook_${TIMESTAMP}
+          cp script/main.py notebook_${TIMESTAMP}/main_${TIMESTAMP}.py
+          cp script/kernel-metadata.json notebook_${TIMESTAMP}/kernel-metadata.json
 
-      - name: Submit and Run Notebook  # 提交并运行 Notebook
+      - name: Submit and Run Notebook
         run: |
-          kaggle kernels push -p notebook_${{ env.TIMESTAMP }}  # 推送临时文件夹
-          kaggle kernels create -p notebook_${{ env.TIMESTAMP }} --title "Notebook ${{ env.TIMESTAMP }}" --id <kernel-id>  # 创建并运行 Notebook
-          echo "Notebook ${{ env.TIMESTAMP }} submitted."  # 输出提示信息
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
+          kaggle kernels push -p ${NOTEBOOK_DIR}
+          kaggle kernels create -p ${NOTEBOOK_DIR} --title "Notebook ${TIMESTAMP}" --id <kernel-id>
+          echo "Notebook ${TIMESTAMP} submitted."
 
-      - name: Clean Up  # 清理临时文件夹
+      - name: Clean Up
         run: |
-          rm -rf notebook_${{ env.TIMESTAMP }}  # 删除临时文件夹
-          echo "Temporary notebook folder deleted."  # 输出提示信息
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          rm -rf notebook_${TIMESTAMP}
+          echo "Temporary notebook folder deleted."
