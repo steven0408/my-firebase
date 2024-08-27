@@ -30,7 +30,7 @@ jobs:
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           mkdir -p notebook_${TIMESTAMP}
-          cp script/main.py notebook_${TIMESTAMP}/main_${TIMESTAMP}.py
+          cp script/main.py notebook_${TIMESTAMP}/main.py
           cp script/kernel-metadata.json notebook_${TIMESTAMP}/kernel-metadata.json
 
       - name: Submit and Run Notebook
