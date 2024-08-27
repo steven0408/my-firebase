@@ -1,60 +1,36 @@
-name: Push Python Script to Kaggle and Stop Script
+name: Manage Kaggle Notebooks  # GitHub Actions 的名称
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天0点执行
-    - cron: '59 23 * * *' # 每天23:59执行
-  workflow_dispatch:  # 允许手动触发
-    inputs:
-      action:
-        description: 'Action to perform'
-        required: true
-        default: 'push'
-        options:
-          - push
-          - stop
+    - cron: '0 0,9,18 * * *'  # 定时任务，每天的00:00、09:00和18:00触发一次
 
 jobs:
-  push-and-stop:
-    runs-on: ubuntu-latest
+  run-notebooks:
+    runs-on: ubuntu-latest  # 在最新的 Ubuntu 环境上运行
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout code  # 检出当前的代码仓库
+        uses: actions/checkout@v2  # 使用 GitHub 提供的 checkout action
 
-      - name: Get day of the week
-        id: get-day
-        run: echo "dayOfWeek=$(date +'%u')" >> $GITHUB_ENV
-
-      - name: Set up Kaggle CLI
+      - name: Install Kaggle CLI  # 安装 Kaggle CLI 工具
         run: |
-          pip install kaggle
-          mkdir -p ~/.kaggle
-          # 根据 dayOfWeek 选择对应的账户
-          if [ "${{ env.dayOfWeek }}" == "1" ]; then
-            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT1 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT1 }}\"}" > ~/.kaggle/kaggle.json
-          elif [ "${{ env.dayOfWeek }}" == "2" ]; then
-            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT2 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT2 }}\"}" > ~/.kaggle/kaggle.json
-          elif [ "${{ env.dayOfWeek }}" == "3" ]; then
-            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT3 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT3 }}\"}" > ~/.kaggle/kaggle.json
-          elif [ "${{ env.dayOfWeek }}" == "4" ]; then
-            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT4 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT4 }}\"}" > ~/.kaggle/kaggle.json
-          elif [ "${{ env.dayOfWeek }}" == "5" ]; then
-            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT5 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT5 }}\"}" > ~/.kaggle/kaggle.json
-          elif [ "${{ env.dayOfWeek }}" == "6" ]; then
-            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT6 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT6 }}\"}" > ~/.kaggle/kaggle.json
-          elif [ "${{ env.dayOfWeek }}" == "7" ]; then
-            echo "{\"username\":\"${{ secrets.KAGGLE_USERNAME_ACCOUNT7 }}\",\"key\":\"${{ secrets.KAGGLE_KEY_ACCOUNT7 }}\"}" > ~/.kaggle/kaggle.json
-          fi
-          chmod 600 ~/.kaggle/kaggle.json
+          pip install kaggle  # 使用 pip 安装 Kaggle CLI
 
-      - name: Push Python script to Kaggle
-        if: ${{ (github.event_name == 'schedule' && github.event.schedule.cron == '0 0 * * *') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'push') }}
+      - name: Prepare Notebook with Timestamp  # 准备带有时间戳的 Notebook
         run: |
-          kaggle kernels push -p script
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 生成唯一的时间戳
+          cp path/to/original_notebook.ipynb path/to/notebook_${TIMESTAMP}.ipynb  # 复制原始 Notebook 并添加时间戳
 
-      - name: Stop Python script
-        if: ${{ (github.event_name == 'schedule' && github.event.schedule.cron == '59 23 * * *') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'stop') }}
+      - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
-          echo "Stopping Python script"
-          pkill -f main.py
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 重新获取时间戳
+          NOTEBOOK_PATH="path/to/notebook_${TIMESTAMP}.ipynb"  # 设置带有时间戳的 Notebook 文件路径
+          kaggle kernels push -p ${NOTEBOOK_PATH}  # 上传 Notebook 到 Kaggle
+          kaggle kernels create -p ${NOTEBOOK_PATH} --title "Notebook ${TIMESTAMP}" --id <kernel-id>  # 创建并运行 Notebook
+          echo "Notebook ${TIMESTAMP} submitted."  # 输出提示信息
+
+      - name: Clean Up  # 清理临时文件
+        run: |
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 重新获取时间戳
+          rm path/to/notebook_${TIMESTAMP}.ipynb  # 删除临时 Notebook 文件
+          echo "Temporary notebook file deleted."  # 输出提示信息
