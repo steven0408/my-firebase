@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Checkout code  # 检出当前的代码仓库
         uses: actions/checkout@v2  # 使用 GitHub 提供的 checkout action
+      
+      - name: Setup Kaggle API credentials  # 设置 Kaggle API 凭证
+        run: |
+          chmod 600 script/kaggle.json  # 设置权限，确保只有当前用户可以读取
 
       - name: Install Kaggle CLI  # 安装 Kaggle CLI 工具
         run: |
