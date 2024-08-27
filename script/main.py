@@ -1,96 +1,17 @@
-import requests
-
-def check_internet_connection():
-    try:
-        response = requests.get('https://www.google.com', timeout=10)
-        if response.status_code == 200:
-            print("网络连接正常。")
-            return True
-        else:
-            print(f"收到非200响应状态码: {response.status_code}")
-            return False
-    except requests.ConnectionError as e:
-        print(f"网络连接错误: {e}")
-        return False
-    except requests.Timeout as e:
-        print(f"请求超时: {e}")
-        return False
-    except requests.RequestException as e:
-        print(f"网络请求发生异常: {e}")
-        return False
-
-check_internet_connection()
-
-import urllib.request
-
-def check_internet_connection_urllib():
-    url = 'http://www.google.com'
-    try:
-        response = urllib.request.urlopen(url, timeout=10)
-        print("网络连接正常。")
-        return True
-    except urllib.error.URLError as e:
-        print(f"网络连接错误: {e.reason}")
-        return False
-    except Exception as e:
-        print(f"网络请求发生异常: {e}")
-        return False
-
-check_internet_connection_urllib()
-
-import os
-
-def check_network_config():
-    internet_setting = os.getenv('KAGGLE_KERNEL_INTERNET')
-    print(f"Internet setting is: {internet_setting}")
-
-check_network_config()
-
-
-import subprocess
-import sys
-
-def install(file_path):
-    try:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', file_path])
-    except subprocess.CalledProcessError as e:
-        print(f"Error occurred while installing {file_path}: {e}")
-
-whl_file_path = '/kaggle/working/script/firebase_admin/firebase_admin-6.5.0-py3-none-any.whl'
-install(whl_file_path)
-
-# 测试安装是否成功
-try:
-    import firebase_admin
-    print(f"firebase_admin version: {firebase_admin.__version__}")
-except ImportError as e:
-    print(f"Error importing firebase_admin: {e}")
-
-def install_package(package):
-    """安装指定的 Python 包"""
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
-
-# 尝试导入 firebase_admin
-try:
-    import firebase_admin
-except ImportError:
-    print("firebase_admin 未安装，正在尝试安装...")
-    install_package('firebase_admin')
-    import firebase_admin
-
 import time
 import threading
 import firebase_admin
 from firebase_admin import credentials, db
 from chatAI import Gemini
+from kaggle.api.kaggle_api_extended import KaggleApi
 
 # Fetch the service account key JSON file contents
-root = ''
-cred = credentials.Certificate(root + 'adminsdk.json')
+cred = credentials.Certificate('adminsdk.json')
 
 # Initialize the app with a service account, granting admin privileges
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://woolen-firebase-test1-default-rtdb.firebaseio.com/'
+    'databaseURL':
+    'https://woolen-firebase-test1-default-rtdb.firebaseio.com/'
 })
 
 # 设置空闲时间（秒）
@@ -105,6 +26,7 @@ ref = db.reference('texts')
 # Global variable to track if the listener is running
 listener_running = False
 
+
 def clear_database_if_idle():
     global last_data_change_time
     while True:
@@ -117,12 +39,13 @@ def clear_database_if_idle():
                 print("Database cleared due to inactivity.")
             except Exception as e:
                 print("Error clearing database:", e)
-            
+
             # 重置上次数据变化时间
             last_data_change_time = time.time()
-        
+
         # 每隔一段时间检查一次
         time.sleep(300)
+
 
 # Function to fetch data from Firebase
 def fetch_data(content, history):
@@ -134,11 +57,12 @@ def fetch_data(content, history):
             gemini = Gemini(history=history)
 
         response, emotion, history = gemini.chat(content)
+        
         return response, emotion, history
     except Exception as e:
         print("Error processing data with gemini.chat:", e)
         return None, None, None
-
+    
 # 定义数据变化处理函数
 def on_data_change(event):
     global last_data_change_time
@@ -148,33 +72,56 @@ def on_data_change(event):
 
         # 处理数据变动
         data = event.data
-        if data.get('source') != 'python':
+        if data.get('source') == 'JS':
             content = data.get('content')
             history = data.get('history')
-            print("Data", data)
             if content:
                 response, emotion, history = fetch_data(content, history)
                 if response:
                     write_data(event.path, response, emotion, history)
+                    
+                    # 检查 Kernel 状态
+                    api = KaggleApi()
+                    api.authenticate()
+
+                    max_attempts = 60
+                    attempts = 0
+                    
+                    while True:
+                        try:
+                            status = api.kernel_status('woolen', 'woolen')
+                            print(f"Kernel status: {status['status']}")
+                            if status['status'] == 'complete':
+                                output = api.kernel_output('woolen', 'woolen')
+                                print('output:',output)
+                                break
+                            time.sleep(60)
+                            attempts += 1 # 每分钟检查一次
+                        except Exception as e:
+                            print(f"An error occurred: {e}")
+                            break
+
 
 def write_data(key, response, emotion, history):
     try:
         ref = db.reference(f'texts/{key}')
         ref.update({
-            'content': response ,
-            'emotion': emotion ,
-            'source': 'python' ,
+            'content': response,
+            'emotion': emotion,
+            'source': 'python',
             'history': history
         })
         print(f"Data updated in Firebase at key: {key}")
     except Exception as e:
         print("Error updating data in Firebase:", e)
 
+
 def start_listener():
     global listener_running
     if not listener_running:
         # 启动后台线程以监控空闲时间并清空数据库
-        idle_monitor_thread = threading.Thread(target=clear_database_if_idle, daemon=True)
+        idle_monitor_thread = threading.Thread(target=clear_database_if_idle,
+                                               daemon=True)
         idle_monitor_thread.start()
 
         print("Listening for new data...")
@@ -183,7 +130,7 @@ def start_listener():
     else:
         print("Listener is already running.")
 
+
 # Example usage
 if __name__ == "__main__":
-
     start_listener()
