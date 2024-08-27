@@ -26,7 +26,7 @@ jobs:
       - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 重新获取时间戳
-          NOTEBOOK_DIR="path/to/notebook_${TIMESTAMP}"  # 设置临时文件夹路径
+          NOTEBOOK_DIR="notebook_${TIMESTAMP}"  # 设置临时文件夹路径
           kaggle kernels push -p ${NOTEBOOK_DIR}  # 推送临时文件夹
           kaggle kernels create -p ${NOTEBOOK_DIR} --title "Notebook ${TIMESTAMP}" --id <kernel-id>  # 创建并运行 Notebook
           echo "Notebook ${TIMESTAMP} submitted."  # 输出提示信息
@@ -34,5 +34,5 @@ jobs:
       - name: Clean Up  # 清理临时文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 重新获取时间戳
-          rm -rf path/to/notebook_${TIMESTAMP}  # 删除临时文件夹
+          rm -rf notebook_${TIMESTAMP}  # 删除临时文件夹
           echo "Temporary notebook folder deleted."  # 输出提示信息
