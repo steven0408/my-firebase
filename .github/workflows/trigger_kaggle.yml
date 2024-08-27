@@ -26,7 +26,7 @@ jobs:
         run: |
           pip install kaggle
 
-      - name: Prepare Notebook with Timestamp  # 准备带有时间戳的 Notebook 文件夹
+      - name: Prepare Notebook With Timestamp  # 准备带有时间戳的 Notebook 文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           mkdir -p notebook_${TIMESTAMP}
