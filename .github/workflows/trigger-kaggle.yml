@@ -15,7 +15,39 @@ jobs:
       
       - name: Setup Kaggle API credentials  # 设置 Kaggle API 凭证
         run: |
-          chmod 600 script/kaggle.json  # 设置权限，确保只有当前用户可以读取
+你遇到的错误提示 Could not find kaggle.json 表示 Kaggle CLI 无法找到用于身份验证的 kaggle.json 文件。这个文件通常包含你的 Kaggle API 密钥，并且需要放在特定路径下。
+
+要解决这个问题，可以在 GitHub Actions 中添加步骤，将 kaggle.json 文件添加到正确的目录。以下是如何修改你的工作流文件来处理这个问题：
+1. 获取 Kaggle API 密钥
+
+首先，确保你已经在 Kaggle 网站上生成了 API 密钥。生成后，Kaggle 会为你下载一个 kaggle.json 文件，里面包含你的用户名和 API 密钥。
+2. 添加 kaggle.json 文件到 GitHub Secrets
+
+将 kaggle.json 文件的内容复制到 GitHub 仓库的 Secrets 中。你可以将其命名为 KAGGLE_JSON.
+3. 修改 GitHub Actions 工作流文件
+
+yaml
+
+name: Manage Kaggle Notebooks  # GitHub Actions 的名称
+
+on:
+  schedule:
+    - cron: '0 0,9,18 * * *'  # 定时任务，每天的00:00、09:00和18:00触发一次
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  run-notebooks:
+    runs-on: ubuntu-latest  # 在最新的 Ubuntu 环境上运行
+
+    steps:
+      - name: Checkout code  # 检出当前的代码仓库
+        uses: actions/checkout@v2  # 使用 GitHub 提供的 checkout action
+
+      - name: Setup Kaggle API credentials  # 设置 Kaggle API 凭证
+        run: |
+          mkdir -p ~/.kaggle  # 创建 .kaggle 目录
+          echo "${{ secrets.KAGGLE_JSON }}" > ~/.kaggle/kaggle.json  # 将 secrets 中的 KAGGLE_JSON 写入 kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json  # 设置权限，确保只有当前用户可以读取
 
       - name: Install Kaggle CLI  # 安装 Kaggle CLI 工具
         run: |
