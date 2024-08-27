@@ -33,7 +33,7 @@ jobs:
       - name: Prepare Notebook with Timestamp  # 准备带有时间戳的 Notebook 文件夹
         run: |
           mkdir -p notebook_${{ env.TIMESTAMP }}  # 创建临时文件夹
-          cp script/main.py notebook_${{ env.TIMESTAMP }}/main_${{ env.TIMESTAMP }}.py  # 复制并重命名 Notebook 文件
+          cp script/main.py notebook_${{ env.TIMESTAMP }}/main.py  # 复制并重命名 Notebook 文件
           cp script/kernel-metadata.json notebook_${{ env.TIMESTAMP }}/kernel-metadata.json  # 复制 kernel-metadata.json 文件到临时文件夹
 
       - name: Submit and Run Notebook  # 提交并运行 Notebook
