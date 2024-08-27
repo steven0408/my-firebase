@@ -1,12 +1,51 @@
+# %% [code]
+import os
+import sys
+import json
 import time
 import threading
-import firebase_admin
-from firebase_admin import credentials, db
-from chatAI import Gemini
+import subprocess
+import importlib.metadata
+import google.generativeai as genai
+from google.generativeai.types.generation_types import StopCandidateException
+
+# Ensure required packages are installed
+def ensure_package_installed(package_name, github_url=None):
+    try:
+        importlib.metadata.version(package_name)
+        print(f"{package_name} is already installed.")
+    except importlib.metadata.PackageNotFoundError:
+        print(f"{package_name} not found. Installing...")
+        if github_url:
+            subprocess.run(["git", "clone", github_url], check=True)
+            package_dir = github_url.split('/')[-1].replace('.git', '')
+            subprocess.run([sys.executable, '-m', 'pip', 'install', f'./{package_dir}'], check=True)
+        else:
+            subprocess.run([sys.executable, '-m', 'pip', 'install', package_name], check=True)
+
+ensure_package_installed('firebase_admin')
+
+# Import packages
+try:
+    import firebase_admin
+    from firebase_admin import credentials, db, storage
+except ImportError as e:
+    print(f"Error importing firebase_admin: {e}")
+    sys.exit(1)
+
+    
+# 设置权限
+with open('/kaggle/input/woolen-database/kaggle.json') as f:
+    kaggle_credentials = json.load(f)
+
+# 设置环境变量
+os.environ['KAGGLE_USERNAME'] = kaggle_credentials['username']
+os.environ['KAGGLE_KEY'] = kaggle_credentials['key']
+
 from kaggle.api.kaggle_api_extended import KaggleApi
 
 # Fetch the service account key JSON file contents
-cred = credentials.Certificate('adminsdk.json')
+cred = credentials.Certificate('/kaggle/input/woolen-database/adminsdk.json')
 
 # Initialize the app with a service account, granting admin privileges
 firebase_admin.initialize_app(cred, {
@@ -129,6 +168,44 @@ def start_listener():
         listener_running = True
     else:
         print("Listener is already running.")
+        
+
+class Gemini:
+    def __init__(self, history):
+        api_key = 'AIzaSyBflo5s9osZ4JkvdC5wtHmm1niWgmEEiII'
+        genai.configure(api_key=api_key)
+        self.model = genai.GenerativeModel("gemini-1.5-flash")
+        self.chat_rule = [{"role": "user", "parts": "請使用女性友人的語氣和我對話"}]
+        self.emotion_rule = [{"role": "user", "parts": "請判斷以下對話的情緒屬於下列哪一種 : [喜, 怒, 哀, 樂, 中性]，只需要回答框框內的文字"}]
+        self.chat_history = history
+
+    def chat(self, message):
+        while True:
+            try:
+                # 创建一个新的聊天会话
+                chat_session = self.model.start_chat(history=self.chat_rule + self.chat_history)
+                response = chat_session.send_message(message)
+
+                # 更新聊天历史
+                # self.chat_history.append({"role": "user", "parts": message})
+                self.chat_history.append({"role": "model", "parts": response.text})
+                self.remove_first_if_long(self.chat_history)
+                
+                # 创建一个新的情绪检测会话
+                emotion_session = self.model.start_chat(history=self.emotion_rule + [{"role": "model", "parts": response.text}])
+                emotion_res = emotion_session.send_message(response.text)
+
+                return response.text, emotion_res.text, self.chat_history
+
+            except genai.types.generation_types.StopCandidateException:
+                # 处理异常并继续尝试发送消息
+                continue
+    
+    def remove_first_if_long(self, list):
+        if len(list) > 10:
+            list.pop(0)
+            list.pop(0)
+        return list
 
 
 # Example usage
