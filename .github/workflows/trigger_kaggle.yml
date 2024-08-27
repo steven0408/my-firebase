@@ -1,47 +1,48 @@
-name: Manage Kaggle Notebooks
+name: Manage Kaggle Notebooks  # GitHub Actions 的名称
 
 on:
   schedule:
-    - cron: '0 0,9,18 * * *'  # 定时任务
+    - cron: '0 0,9,18 * * *'  # 定时任务，每天的00:00、09:00和18:00触发一次
   workflow_dispatch:  # 允许手动触发
 
 jobs:
   run-notebooks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # 在最新的 Ubuntu 环境上运行
     env:
       KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
       KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout code  # 检出当前的代码仓库
         uses: actions/checkout@v2
 
-      - name: Setup Kaggle API credentials
+      - name: Setup Kaggle API credentials  # 设置 Kaggle API 凭证
         run: |
           mkdir -p ~/.kaggle
           echo "${{ secrets.KAGGLE_JSON }}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
 
-      - name: Install Kaggle CLI
+      - name: Install Kaggle CLI  # 安装 Kaggle CLI 工具
         run: |
           pip install kaggle
 
-      - name: Prepare Notebook with Timestamp
+      - name: Prepare Notebook with Timestamp  # 准备带有时间戳的 Notebook 文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           mkdir -p notebook_${TIMESTAMP}
           cp script/main.py notebook_${TIMESTAMP}/main.py
           cp script/kernel-metadata.json notebook_${TIMESTAMP}/kernel-metadata.json
 
-      - name: Submit and Run Notebook
+      - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
+          NOTEBOOK_TITLE="Notebook_${TIMESTAMP}"
           kaggle kernels push -p ${NOTEBOOK_DIR}
-          kaggle kernels create -p ${NOTEBOOK_DIR} --title "Notebook ${TIMESTAMP}" --id <kernel-id>
-          echo "Notebook ${TIMESTAMP} submitted."
+          kaggle kernels create -p ${NOTEBOOK_DIR} --title "${NOTEBOOK_TITLE}" --id <kernel-id>
+          echo "Notebook ${NOTEBOOK_TITLE} submitted."
 
-      - name: Clean Up
+      - name: Clean Up  # 清理临时文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           rm -rf notebook_${TIMESTAMP}
