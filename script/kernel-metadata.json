@@ -1,13 +1,10 @@
 {
-  "id": "steven0408/data-analysis",
-  "title": "Data Analysis with Python 1",
+  "id": "woolen/notebook",
+  "title": "Notebook with Timestamp",
+  "code_file": "main.py",
   "language": "python",
   "kernel_type": "script",
-  "code_file": "main.py",
-  "dataset_sources": [],
+  "is_private": "false",
   "enable_gpu": "false",
-  "enable_internet": "true",
-  "tags": [],
-  "icon": null,
-  "is_private": "true"
+  "enable_internet": "true"
 }
