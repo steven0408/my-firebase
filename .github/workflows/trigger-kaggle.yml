@@ -16,21 +16,23 @@ jobs:
         run: |
           pip install kaggle  # 使用 pip 安装 Kaggle CLI
 
-      - name: Prepare Notebook with Timestamp  # 准备带有时间戳的 Notebook
+      - name: Prepare Notebook with Timestamp  # 准备带有时间戳的 Notebook 文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 生成唯一的时间戳
-          cp path/to/original_notebook.ipynb path/to/notebook_${TIMESTAMP}.ipynb  # 复制原始 Notebook 并添加时间戳
+          mkdir -p notebook_${TIMESTAMP}  # 创建临时文件夹
+          cp script/main.py notebook_${TIMESTAMP}/main_${TIMESTAMP}.py # 复制并重命名 Notebook 文件
+          cp script/kernel.yaml path/to/notebook_${TIMESTAMP}/kernel.yaml  # 复制 kernel.yaml 文件到临时文件夹
 
       - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 重新获取时间戳
-          NOTEBOOK_PATH="path/to/notebook_${TIMESTAMP}.ipynb"  # 设置带有时间戳的 Notebook 文件路径
-          kaggle kernels push -p ${NOTEBOOK_PATH}  # 上传 Notebook 到 Kaggle
-          kaggle kernels create -p ${NOTEBOOK_PATH} --title "Notebook ${TIMESTAMP}" --id <kernel-id>  # 创建并运行 Notebook
+          NOTEBOOK_DIR="path/to/notebook_${TIMESTAMP}"  # 设置临时文件夹路径
+          kaggle kernels push -p ${NOTEBOOK_DIR}  # 推送临时文件夹
+          kaggle kernels create -p ${NOTEBOOK_DIR} --title "Notebook ${TIMESTAMP}" --id <kernel-id>  # 创建并运行 Notebook
           echo "Notebook ${TIMESTAMP} submitted."  # 输出提示信息
 
-      - name: Clean Up  # 清理临时文件
+      - name: Clean Up  # 清理临时文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 重新获取时间戳
-          rm path/to/notebook_${TIMESTAMP}.ipynb  # 删除临时 Notebook 文件
-          echo "Temporary notebook file deleted."  # 输出提示信息
+          rm -rf path/to/notebook_${TIMESTAMP}  # 删除临时文件夹
+          echo "Temporary notebook folder deleted."  # 输出提示信息
