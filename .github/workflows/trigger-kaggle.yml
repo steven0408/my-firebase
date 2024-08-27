@@ -3,6 +3,7 @@ name: Manage Kaggle Notebooks  # GitHub Actions 的名称
 on:
   schedule:
     - cron: '0 0,9,18 * * *'  # 定时任务，每天的00:00、09:00和18:00触发一次
+  workflow_dispatch:
 
 jobs:
   run-notebooks:
