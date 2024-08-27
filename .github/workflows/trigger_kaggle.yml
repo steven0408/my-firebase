@@ -11,10 +11,15 @@ jobs:
     env:
       KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
       KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      TIMESTAMP: ${{ steps.timestamp.outputs.current_timestamp }}  # 使用生成的时间戳
 
     steps:
       - name: Checkout code  # 检出当前的代码仓库
         uses: actions/checkout@v2  # 使用 GitHub 提供的 checkout action
+
+      - name: Generate Timestamp  # 生成时间戳
+        id: timestamp
+        run: echo "::set-output name=current_timestamp::$(date +'%Y%m%d%H%M%S')"  # 设置时间戳输出
 
       - name: Setup Kaggle API credentials  # 设置 Kaggle API 凭证
         run: |
@@ -28,14 +33,14 @@ jobs:
 
       - name: Prepare Notebook with Timestamp  # 准备带有时间戳的 Notebook 文件夹
         run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 生成唯一的时间戳
+          TIMESTAMP=${{ steps.timestamp.outputs.current_timestamp }}  # 获取时间戳
           mkdir -p notebook_${TIMESTAMP}  # 创建临时文件夹
           cp script/main.py notebook_${TIMESTAMP}/main_${TIMESTAMP}.py # 复制并重命名 Notebook 文件
           cp script/kernel-metadata.json notebook_${TIMESTAMP}/kernel-metadata.json  # 复制 kernel-metadata.json 文件到临时文件夹
 
       - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 重新获取时间戳
+          TIMESTAMP=${{ steps.timestamp.outputs.current_timestamp }}  # 获取时间戳
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"  # 设置临时文件夹路径
           kaggle kernels push -p ${NOTEBOOK_DIR}  # 推送临时文件夹
           kaggle kernels create -p ${NOTEBOOK_DIR} --title "Notebook ${TIMESTAMP}" --id <kernel-id>  # 创建并运行 Notebook
@@ -43,6 +48,6 @@ jobs:
 
       - name: Clean Up  # 清理临时文件夹
         run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 重新获取时间戳
+          TIMESTAMP=${{ steps.timestamp.outputs.current_timestamp }}  # 获取时间戳
           rm -rf notebook_${TIMESTAMP}  # 删除临时文件夹
           echo "Temporary notebook folder deleted."  # 输出提示信息
