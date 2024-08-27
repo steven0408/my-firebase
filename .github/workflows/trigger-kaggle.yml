@@ -22,7 +22,7 @@ jobs:
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # 生成唯一的时间戳
           mkdir -p notebook_${TIMESTAMP}  # 创建临时文件夹
           cp script/main.py notebook_${TIMESTAMP}/main_${TIMESTAMP}.py # 复制并重命名 Notebook 文件
-          cp script/kernel.yaml path/to/notebook_${TIMESTAMP}/kernel-metadata.json
+          cp script/kernel-metadata.json path/to/notebook_${TIMESTAMP}/kernel-metadata.json
           
       - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
