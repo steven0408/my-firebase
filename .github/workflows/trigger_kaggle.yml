@@ -39,7 +39,7 @@ jobs:
       - name: Debug - Print Variables
         run: |
           echo "Notebook Directory: ${NOTEBOOK_DIR}"
-          ls ${NOTEBOOK_DIR}
+          ls -l ${NOTEBOOK_DIR}
 
       - name: Push and Run Notebook
         run: |
