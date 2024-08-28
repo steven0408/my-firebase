@@ -53,11 +53,16 @@ jobs:
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           NOTEBOOK_TITLE="Notebook_${TIMESTAMP}"
           echo "Submitting notebook with title: ${NOTEBOOK_TITLE}"
-          kaggle kernels push -p ${NOTEBOOK_DIR}
           
-          # Try to create a new kernel. If it fails due to conflict, print the error and continue.
-          if ! kaggle kernels create -p ${NOTEBOOK_DIR} --title "${NOTEBOOK_TITLE}"; then
-            echo "Error creating notebook with title: ${NOTEBOOK_TITLE}. The title may be already in use."
+          # Verify the directory before submitting
+          if [ -d "${NOTEBOOK_DIR}" ]; then
+            echo "Directory ${NOTEBOOK_DIR} exists, proceeding with submission."
+            kaggle kernels push -p ${NOTEBOOK_DIR}
+            kaggle kernels create -p ${NOTEBOOK_DIR} --title "${NOTEBOOK_TITLE}"
+            echo "Notebook ${NOTEBOOK_TITLE} submitted."
+          else
+            echo "Directory ${NOTEBOOK_DIR} does not exist. Cannot submit notebook."
+            exit 1
           fi
 
       - name: Clean Up  # 清理临时文件夹
