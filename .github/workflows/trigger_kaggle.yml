@@ -36,12 +36,17 @@ jobs:
           # 在 kernel-metadata.json 文件中更新 title 字段，添加时间戳
           sed -i "s/\"title\": \".*\"/\"title\": \"${NOTEBOOK_TITLE}\"/" ${NOTEBOOK_DIR}/kernel-metadata.json
 
+      - name: Debug - Print Variables
+        run: |
+          echo "Notebook Directory: ${NOTEBOOK_DIR}"
+          ls ${NOTEBOOK_DIR}
+
       - name: Push and Run Notebook
         run: |
-          kaggle kernels push -p ${NOTEBOOK_DIR}
+          kaggle kernels push -p "${NOTEBOOK_DIR}"
           echo "Notebook ${NOTEBOOK_TITLE} submitted and running."
 
       - name: Clean Up
         run: |
-          rm -rf ${NOTEBOOK_DIR}
+          rm -rf "${NOTEBOOK_DIR}"
           echo "Temporary notebook folder deleted."
