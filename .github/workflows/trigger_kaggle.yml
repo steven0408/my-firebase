@@ -2,51 +2,42 @@ name: Manage Kaggle Notebooks
 
 on:
   schedule:
-    - cron: '0 0,9,18 * * *'
-  workflow_dispatch:
+    - cron: '0 0,9,18 * * *'  # 定时任务，每天的00:00、09:00和18:00触发一次
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   run-notebooks:
-    runs-on: ubuntu-latest
-    env:
-      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-      KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+    runs-on: ubuntu-latest  # 在最新的 Ubuntu 环境上运行
 
     steps:
-      - name: Checkout code
+      - name: Checkout code  # 检出当前的代码仓库
         uses: actions/checkout@v2
 
-      - name: Setup Kaggle API credentials
-        run: |
-          mkdir -p ~/.kaggle
-          echo "${{ secrets.KAGGLE_JSON }}" > ~/.kaggle/kaggle.json
-          chmod 600 ~/.kaggle/kaggle.json
-
-      - name: Install Kaggle CLI
-        run: pip install kaggle
-
-      - name: Prepare Notebook With Timestamp
+      - name: Prepare Notebook With Timestamp  # 准备带有时间戳的 Notebook 文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           NOTEBOOK_TITLE="Notebook_${TIMESTAMP}"  # 使用带时间戳的名称
+          
+          echo "Creating directory: ${NOTEBOOK_DIR}"
           mkdir -p ${NOTEBOOK_DIR}
-          cp script/main.py ${NOTEBOOK_DIR}/main.py
-          cp script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
-          # 在 kernel-metadata.json 文件中更新 title 字段，添加时间戳
+          
+          echo "Copying files into ${NOTEBOOK_DIR}"
+          cp -v script/main.py ${NOTEBOOK_DIR}/main.py
+          cp -v script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
+          
+          echo "Updating kernel-metadata.json"
           sed -i "s/\"title\": \".*\"/\"title\": \"${NOTEBOOK_TITLE}\"/" ${NOTEBOOK_DIR}/kernel-metadata.json
-
-      - name: Debug - Print Variables
-        run: |
+          
           echo "Notebook Directory: ${NOTEBOOK_DIR}"
           ls -l ${NOTEBOOK_DIR}
 
-      - name: Push and Run Notebook
+      - name: List All Files  # 列出所有文件以验证目录内容
         run: |
-          kaggle kernels push -p "${NOTEBOOK_DIR}"
-          echo "Notebook ${NOTEBOOK_TITLE} submitted and running."
+          echo "Listing all files in the repository:"
+          ls -R
 
-      - name: Clean Up
+      - name: Submit Notebook to Kaggle  # 提交 Notebook 到 Kaggle
         run: |
-          rm -rf "${NOTEBOOK_DIR}"
-          echo "Temporary notebook folder deleted."
+          echo "Submitting notebook with title: ${NOTEBOOK_TITLE}"
+          kaggle kernels push -p ${NOTEBOOK_DIR}
