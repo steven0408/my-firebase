@@ -42,7 +42,7 @@ jobs:
           echo "Updating kernel-metadata.json"
           sed -i "s/\"title\": \".*\"/\"title\": \"${NOTEBOOK_TITLE}\"/" ${NOTEBOOK_DIR}/kernel-metadata.json
           
-          echo "Notebook Directory: ${NOTEBOOK_DIR}"
+          echo "Notebook Directory Path: ${NOTEBOOK_DIR}"
           ls -l ${NOTEBOOK_DIR}
 
       - name: Submit Notebook to Kaggle
