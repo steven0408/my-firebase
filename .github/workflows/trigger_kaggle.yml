@@ -48,4 +48,5 @@ jobs:
       - name: Submit Notebook to Kaggle  # 提交 Notebook 到 Kaggle
         run: |
           echo "Submitting notebook with title: ${NOTEBOOK_TITLE}"
+          echo "Notebook Dir: ${NOTEBOOK_DIR}"
           kaggle kernels push -p ${NOTEBOOK_DIR} || { echo "Failed to push notebook to Kaggle"; exit 1; }
