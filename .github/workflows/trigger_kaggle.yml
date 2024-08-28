@@ -50,4 +50,6 @@ jobs:
           echo "Submitting notebook with title: ${NOTEBOOK_TITLE}"
           ABSOLUTE_PATH=$(pwd)/${NOTEBOOK_DIR}
           echo "Absolute path: ${ABSOLUTE_PATH}"
+          echo "Listing files in the directory:"
+          ls -l ${ABSOLUTE_PATH}
           kaggle kernels push -p "${ABSOLUTE_PATH}" || { echo "Failed to push notebook to Kaggle"; exit 1; }
