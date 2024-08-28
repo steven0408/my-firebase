@@ -28,16 +28,28 @@ jobs:
 
       - name: Prepare Notebook With Timestamp  # 准备带有时间戳的 Notebook 文件夹
         run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S%N')
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           echo "Creating notebook directory: ${NOTEBOOK_DIR}"
           mkdir -p ${NOTEBOOK_DIR}
           cp script/main.py ${NOTEBOOK_DIR}/main.py
           cp script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
 
+      - name: Verify Notebook Directory  # 验证 Notebook 文件夹
+        run: |
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
+          if [ -d "${NOTEBOOK_DIR}" ]; then
+            echo "Notebook directory ${NOTEBOOK_DIR} exists."
+            ls -l ${NOTEBOOK_DIR}
+          else
+            echo "Notebook directory ${NOTEBOOK_DIR} does not exist."
+            exit 1
+          fi
+
       - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S%N')
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           NOTEBOOK_TITLE="Notebook_${TIMESTAMP}"
           echo "Submitting notebook with title: ${NOTEBOOK_TITLE}"
@@ -50,7 +62,7 @@ jobs:
 
       - name: Clean Up  # 清理临时文件夹
         run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S%N')
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           rm -rf ${NOTEBOOK_DIR}
           echo "Temporary notebook folder deleted."
