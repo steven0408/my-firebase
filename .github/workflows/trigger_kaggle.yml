@@ -1,4 +1,4 @@
-name: Manage Kaggle Notebooks  # GitHub Actions 的名称
+name: Manage Kaggle Notebooks
 
 on:
   schedule:
@@ -29,17 +29,23 @@ jobs:
       - name: Prepare Notebook With Timestamp  # 准备带有时间戳的 Notebook 文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          mkdir -p notebook_${TIMESTAMP}
-          cp script/main.py notebook_${TIMESTAMP}/main.py
-          cp script/kernel-metadata.json notebook_${TIMESTAMP}/kernel-metadata.json
+          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
+          mkdir -p ${NOTEBOOK_DIR}
+          cp script/main.py ${NOTEBOOK_DIR}/main.py
+          cp script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
 
       - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           NOTEBOOK_TITLE="Notebook_${TIMESTAMP}"
+          
+          # 提交 Notebook 并创建
           kaggle kernels push -p ${NOTEBOOK_DIR}
-          kaggle kernels create -p ${NOTEBOOK_DIR} --title "${NOTEBOOK_TITLE}" --id <kernel-id>
+          
+          # 使用唯一标题创建新的 Kernel
+          kaggle kernels create -p ${NOTEBOOK_DIR} --title "${NOTEBOOK_TITLE}" || true
+          
           echo "Notebook ${NOTEBOOK_TITLE} submitted."
 
       - name: Clean Up  # 清理临时文件夹
