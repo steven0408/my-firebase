@@ -2,52 +2,49 @@ name: Manage Kaggle Notebooks
 
 on:
   schedule:
-    - cron: '0 0,9,18 * * *'  # 定时任务，每天的00:00、09:00和18:00触发一次
+    - cron: '0 0,9,18 * * *'  # 每天00:00、09:00和18:00运行一次
   workflow_dispatch:  # 允许手动触发
 
 jobs:
   run-notebooks:
-    runs-on: ubuntu-latest  # 在最新的 Ubuntu 环境上运行
+    runs-on: ubuntu-latest
     env:
       KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
       KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
 
     steps:
-      - name: Checkout code  # 检出当前的代码仓库
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Kaggle API credentials  # 设置 Kaggle API 凭证
+      - name: Setup Kaggle API credentials
         run: |
           mkdir -p ~/.kaggle
           echo "${{ secrets.KAGGLE_JSON }}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
 
-      - name: Install Kaggle CLI  # 安装 Kaggle CLI 工具
-        run: |
-          pip install kaggle
+      - name: Install Kaggle CLI
+        run: pip install kaggle
 
-      - name: Prepare Notebook With Timestamp  # 准备带有时间戳的 Notebook 文件夹
+      - name: Prepare Notebook With Timestamp
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
-          NOTEBOOK_TITLE="woolen_notebook_${TIMESTAMP}"
-          NOTEBOOK_ID="woolen_notebook_${TIMESTAMP}"
           mkdir -p ${NOTEBOOK_DIR}
           cp script/main.py ${NOTEBOOK_DIR}/main.py
           cp script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
 
-          # Replace kernel-metadata.json contents
-          sed -i "s/\"id\": \".*\"/\"id\": \"${NOTEBOOK_ID}\"/" ${NOTEBOOK_DIR}/kernel-metadata.json
-          sed -i "s/\"title\": \".*\"/\"title\": \"${NOTEBOOK_TITLE}\"/" ${NOTEBOOK_DIR}/kernel-metadata.json
-
-      - name: Submit and Run Notebook  # 提交并运行 Notebook
+      - name: Submit and Run Notebook
         run: |
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
+          NOTEBOOK_TITLE="woolen_notebook_${TIMESTAMP}"
+          NOTEBOOK_ID="woolen-notebook-${TIMESTAMP}"  # 手动设置 Notebook ID
           kaggle kernels push -p ${NOTEBOOK_DIR}
+          kaggle kernels create -p ${NOTEBOOK_DIR} --title "${NOTEBOOK_TITLE}" --id "${NOTEBOOK_ID}"
           echo "Notebook ${NOTEBOOK_TITLE} submitted."
 
-      - name: Clean Up  # 清理临时文件夹
+      - name: Clean Up
         run: |
-          NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
-          rm -rf ${NOTEBOOK_DIR}
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          rm -rf woolen_notebook_${TIMESTAMP}
           echo "Temporary notebook folder deleted."
