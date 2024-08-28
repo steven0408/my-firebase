@@ -1,4 +1,4 @@
-name: Manage Kaggle Notebook  # GitHub Actions 的名称
+name: Manage Kaggle Notebooks
 
 on:
   schedule:
@@ -30,22 +30,10 @@ jobs:
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
-          echo "Creating notebook directory: ${NOTEBOOK_DIR}"
           mkdir -p ${NOTEBOOK_DIR}
           cp script/main.py ${NOTEBOOK_DIR}/main.py
           cp script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
-
-      - name: Verify Notebook Directory  # 验证 Notebook 文件夹
-        run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
-          if [ -d "${NOTEBOOK_DIR}" ]; then
-            echo "Notebook directory ${NOTEBOOK_DIR} exists."
-            ls -l ${NOTEBOOK_DIR}
-          else
-            echo "Notebook directory ${NOTEBOOK_DIR} does not exist."
-            exit 1
-          fi
+          echo "Directory ${NOTEBOOK_DIR} prepared."
 
       - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
