@@ -30,32 +30,24 @@ jobs:
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
+          NOTEBOOK_TITLE="woolen_notebook_${TIMESTAMP}"
+          NOTEBOOK_ID="woolen_notebook_${TIMESTAMP}"
           mkdir -p ${NOTEBOOK_DIR}
           cp script/main.py ${NOTEBOOK_DIR}/main.py
           cp script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
-          echo "Directory ${NOTEBOOK_DIR} prepared."
+
+          # Replace kernel-metadata.json contents
+          sed -i "s/\"id\": \".*\"/\"id\": \"${NOTEBOOK_ID}\"/" ${NOTEBOOK_DIR}/kernel-metadata.json
+          sed -i "s/\"title\": \".*\"/\"title\": \"${NOTEBOOK_TITLE}\"/" ${NOTEBOOK_DIR}/kernel-metadata.json
 
       - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
-          NOTEBOOK_TITLE="woolen_notebook_${TIMESTAMP}"
-          echo "Submitting notebook with title: ${NOTEBOOK_TITLE}"
-          
-          # Verify the directory before submitting
-          if [ -d "${NOTEBOOK_DIR}" ]; then
-            echo "Directory ${NOTEBOOK_DIR} exists, proceeding with submission."
-            kaggle kernels push -p ${NOTEBOOK_DIR}
-            kaggle kernels create -p ${NOTEBOOK_DIR} --title "${NOTEBOOK_TITLE}"
-            echo "Notebook ${NOTEBOOK_TITLE} submitted."
-          else
-            echo "Directory ${NOTEBOOK_DIR} does not exist. Cannot submit notebook."
-            exit 1
-          fi
+          kaggle kernels push -p ${NOTEBOOK_DIR}
+          echo "Notebook ${NOTEBOOK_TITLE} submitted."
 
       - name: Clean Up  # 清理临时文件夹
         run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
           rm -rf ${NOTEBOOK_DIR}
           echo "Temporary notebook folder deleted."
