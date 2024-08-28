@@ -29,7 +29,7 @@ jobs:
       - name: Prepare Notebook With Timestamp  # 准备带有时间戳的 Notebook 文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
+          NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
           mkdir -p ${NOTEBOOK_DIR}
           cp script/main.py ${NOTEBOOK_DIR}/main.py
           cp script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
@@ -38,8 +38,8 @@ jobs:
       - name: Submit and Run Notebook  # 提交并运行 Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
-          NOTEBOOK_TITLE="Notebook_${TIMESTAMP}"
+          NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
+          NOTEBOOK_TITLE="woolen_notebook_${TIMESTAMP}"
           echo "Submitting notebook with title: ${NOTEBOOK_TITLE}"
           
           # Verify the directory before submitting
@@ -56,6 +56,6 @@ jobs:
       - name: Clean Up  # 清理临时文件夹
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
+          NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
           rm -rf ${NOTEBOOK_DIR}
           echo "Temporary notebook folder deleted."
