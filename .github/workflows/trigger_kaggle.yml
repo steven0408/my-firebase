@@ -28,23 +28,20 @@ jobs:
       - name: Prepare Notebook With Timestamp
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
+          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           mkdir -p ${NOTEBOOK_DIR}
           cp script/main.py ${NOTEBOOK_DIR}/main.py
           cp script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
 
-      - name: Submit and Run Notebook
+      - name: Push and Run Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          NOTEBOOK_DIR="woolen_notebook_${TIMESTAMP}"
-          NOTEBOOK_TITLE="woolen_notebook_${TIMESTAMP}"
-          NOTEBOOK_ID="woolen-notebook-${TIMESTAMP}"  # 手动设置 Notebook ID
+          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           kaggle kernels push -p ${NOTEBOOK_DIR}
-          kaggle kernels create -p ${NOTEBOOK_DIR} --title "${NOTEBOOK_TITLE}" --id "${NOTEBOOK_ID}"
-          echo "Notebook ${NOTEBOOK_TITLE} submitted."
+          echo "Notebook submitted and running."
 
       - name: Clean Up
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          rm -rf woolen_notebook_${TIMESTAMP}
+          rm -rf notebook_${TIMESTAMP}
           echo "Temporary notebook folder deleted."
