@@ -48,7 +48,7 @@ os.makedirs(download_dir, exist_ok=True)
 api.dataset_download_files(dataset_name, path=download_dir, unzip=True)
 
 # Fetch the service account key JSON file contents
-cred = credentials.Certificate('/kaggle/input/woolen-database/adminsdk.json')
+cred = credentials.Certificate('/kaggle/working/woolen-database/adminsdk.json')
 
 # Initialize the app with a service account, granting admin privileges
 firebase_admin.initialize_app(cred, {
