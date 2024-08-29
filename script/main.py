@@ -175,7 +175,7 @@ def start_listener():
 
 class Gemini:
     def __init__(self, history):
-        api_key = 'AIzaSyBflo5s9osZ4JkvdC5wtHmm1niWgmEEiII'
+        api_key = 'AIzaSyBsp5R0Ngrvq8lmBH7Q53aV2IWa93MLE6k'
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel("gemini-1.5-flash")
         self.chat_rule = [{"role": "user", "parts": "請使用女性友人的語氣和我對話"}]
