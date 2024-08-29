@@ -33,7 +33,6 @@ jobs:
       - name: Determine Notebook Title  # 确定 Notebook 标题
         id: determine-title
         run: |
-          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           if [ "${{ github.event_name }}" = "schedule" ]; then
             # 读取存储的状态文件（如果存在）
             if [ -f notebook_state.txt ]; then
@@ -45,18 +44,21 @@ jobs:
             # 根据状态设置标题
             if [ "$STATE" = "A" ]; then
               NOTEBOOK_TITLE="notebook_A"
-              echo "B" > notebook_state.txt  # 更新状态为 B
+              NEW_STATE="B"  # 更新状态为 B
             else
               NOTEBOOK_TITLE="notebook_B"
-              echo "A" > notebook_state.txt  # 更新状态为 A
+              NEW_STATE="A"  # 更新状态为 A
             fi
           else
             NOTEBOOK_TITLE="notebook_C"
           fi
+          
           echo "NOTEBOOK_TITLE=${NOTEBOOK_TITLE}" >> $GITHUB_ENV
+          echo "${NEW_STATE:-$STATE}" > notebook_state.txt  # 保存状态到文件
 
-      - name: Prepare Notebook With Title  # 准备带有标题的 Notebook 文件夹
+      - name: Prepare and Push Notebook  # 准备并推送 Notebook
         run: |
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           
           echo "Creating directory: ${NOTEBOOK_DIR}"
