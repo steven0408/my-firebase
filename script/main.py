@@ -33,16 +33,19 @@ except ImportError as e:
     print(f"Error importing firebase_admin: {e}")
     sys.exit(1)
 
-    
-# 设置权限
-with open('/kaggle/input/woolen-database/kaggle.json') as f:
-    kaggle_credentials = json.load(f)
-
 # 设置环境变量
-os.environ['KAGGLE_USERNAME'] = kaggle_credentials['username']
-os.environ['KAGGLE_KEY'] = kaggle_credentials['key']
+os.environ['KAGGLE_USERNAME'] = "woolen"
+os.environ['KAGGLE_KEY'] = "9e52e128442217f6bea0e14906c70d58"
 
 from kaggle.api.kaggle_api_extended import KaggleApi
+# 初始化 Kaggle API
+api = KaggleApi()
+api.authenticate()
+
+dataset_name = 'woolen/woolen-database'
+download_dir = '/kaggle/input/woolen-database'
+os.makedirs(download_dir, exist_ok=True)
+api.dataset_download_files(dataset_name, path=download_dir, unzip=True)
 
 # Fetch the service account key JSON file contents
 cred = credentials.Certificate('/kaggle/input/woolen-database/adminsdk.json')
