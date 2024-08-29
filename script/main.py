@@ -43,7 +43,7 @@ api = KaggleApi()
 api.authenticate()
 
 dataset_name = 'woolen/woolen-database'
-download_dir = '/kaggle/input/woolen-database'
+download_dir = '/kaggle/working/woolen-database'
 os.makedirs(download_dir, exist_ok=True)
 api.dataset_download_files(dataset_name, path=download_dir, unzip=True)
 
