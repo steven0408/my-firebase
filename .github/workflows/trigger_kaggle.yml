@@ -30,11 +30,34 @@ jobs:
           echo "${{ secrets.KAGGLE_JSON }}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
 
-      - name: Prepare Notebook With Timestamp  # 准备带有时间戳的 Notebook 文件夹
+      - name: Determine Notebook Title  # 确定 Notebook 标题
+        id: determine-title
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            # 读取存储的状态文件（如果存在）
+            if [ -f notebook_state.txt ]; then
+              STATE=$(cat notebook_state.txt)
+            else
+              STATE="A"  # 默认值
+            fi
+            
+            # 根据状态设置标题
+            if [ "$STATE" = "A" ]; then
+              NOTEBOOK_TITLE="notebook_A"
+              echo "B" > notebook_state.txt  # 更新状态为 B
+            else
+              NOTEBOOK_TITLE="notebook_B"
+              echo "A" > notebook_state.txt  # 更新状态为 A
+            fi
+          else
+            NOTEBOOK_TITLE="notebook_C"
+          fi
+          echo "NOTEBOOK_TITLE=${NOTEBOOK_TITLE}" >> $GITHUB_ENV
+
+      - name: Prepare Notebook With Title  # 准备带有标题的 Notebook 文件夹
+        run: |
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
-          NOTEBOOK_TITLE="Notebook_${TIMESTAMP}"  # 使用带时间戳的名称
           
           echo "Creating directory: ${NOTEBOOK_DIR}"
           mkdir -p ${NOTEBOOK_DIR}
@@ -43,7 +66,7 @@ jobs:
           cp -v script/main.py ${NOTEBOOK_DIR}/main.py
           cp -v script/kernel-metadata.json ${NOTEBOOK_DIR}/kernel-metadata.json
           
-          echo "Updating kernel-metadata.json"
+          echo "Updating kernel-metadata.json with title: ${NOTEBOOK_TITLE}"
           sed -i "s/\"title\": \".*\"/\"title\": \"${NOTEBOOK_TITLE}\"/" ${NOTEBOOK_DIR}/kernel-metadata.json
           
           kaggle kernels push -p ${NOTEBOOK_DIR} || { echo "Failed to push notebook to Kaggle"; exit 1; }
