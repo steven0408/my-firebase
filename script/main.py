@@ -131,10 +131,10 @@ def on_data_change(event):
                     
                     while True:
                         try:
-                            status = api.kernel_status('woolen', 'woolen')
+                            status = api.kernel_status('woolen', 'notebook8edc990443')
                             print(f"Kernel status: {status['status']}")
                             if status['status'] == 'complete':
-                                output = api.kernel_output('woolen', 'woolen')
+                                output = api.kernel_output('woolen', 'notebook8edc990443')
                                 print('output:',output)
                                 break
                             time.sleep(60)
