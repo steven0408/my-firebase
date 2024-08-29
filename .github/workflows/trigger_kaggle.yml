@@ -59,7 +59,15 @@ jobs:
       - name: Prepare and Push Notebook  # 准备并推送 Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          NOTEBOOK_DIR="notebook_${TIMESTAMP}"
+          if [ "${NOTEBOOK_TITLE}" = "notebook_C" ]; then
+            NOTEBOOK_DIR="notebook_C"
+            if [ -d "${NOTEBOOK_DIR}" ]; then
+              echo "Removing old ${NOTEBOOK_DIR} directory"
+              rm -rf ${NOTEBOOK_DIR}
+            fi
+          else
+            NOTEBOOK_DIR="notebook_${TIMESTAMP}"
+          fi
           
           echo "Creating directory: ${NOTEBOOK_DIR}"
           mkdir -p ${NOTEBOOK_DIR}
