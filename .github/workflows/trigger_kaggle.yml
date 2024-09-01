@@ -56,6 +56,15 @@ jobs:
           echo "NOTEBOOK_TITLE=${NOTEBOOK_TITLE}" >> $GITHUB_ENV
           echo "${NEW_STATE:-$STATE}" > notebook_state.txt  # 保存状态到文件
 
+      - name: Commit updated state  # Commit the updated state file to the repository
+        if: github.event_name == 'schedule'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add notebook_state.txt
+          git commit -m "Update notebook state to ${NEW_STATE:-$STATE}"
+          git push
+
       - name: Prepare and Push Notebook  # 准备并推送 Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
