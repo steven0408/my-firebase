@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 */6 * * *'  # 定时任务，每9小时触发一次
+    - cron: '0 */9 * * *'  # 定时任务，每9小时触发一次
   workflow_dispatch:  # 允许手动触发
 
 permissions:
@@ -50,13 +50,16 @@ jobs:
               NEW_STATE="B"  # 更新状态为 B
             elif [ "$STATE" = "B" ]; then
               NOTEBOOK_TITLE="notebook_B"
+              NEW_STATE="C"  # 更新状态为 C
+            elif [ "$STATE" = "C" ]; then
+              NOTEBOOK_TITLE="notebook_C"
               NEW_STATE="A"  # 更新状态为 A
             else
               NOTEBOOK_TITLE="notebook_A"  # 如果状态异常，默认使用 A
               NEW_STATE="B"
             fi
           else
-            NOTEBOOK_TITLE="notebook_C"
+            NOTEBOOK_TITLE="notebook_D"  # 手动执行时使用 notebook_D
           fi
           
           echo "NOTEBOOK_TITLE=${NOTEBOOK_TITLE}" >> $GITHUB_ENV
@@ -78,9 +81,9 @@ jobs:
       - name: Prepare and Push Notebook  # 准备并推送 Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          if [ "${NOTEBOOK_TITLE}" = "notebook_C" ]; then
-            NOTEBOOK_DIR="notebook_C"
-            rm -rf ${NOTEBOOK_DIR}  # 删除旧的 notebook_C 目录（如果存在）
+          if [ "${NOTEBOOK_TITLE}" = "notebook_D" ]; then
+            NOTEBOOK_DIR="notebook_D"
+            rm -rf ${NOTEBOOK_DIR}  # 删除旧的 notebook_D 目录（如果存在）
           else
             NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           fi
