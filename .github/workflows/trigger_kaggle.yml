@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout code  # 检出当前的代码仓库
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies  # 安装依赖
         run: |
@@ -48,9 +48,12 @@ jobs:
             if [ "$STATE" = "A" ]; then
               NOTEBOOK_TITLE="notebook_A"
               NEW_STATE="B"  # 更新状态为 B
-            else
+            elif [ "$STATE" = "B" ]; then
               NOTEBOOK_TITLE="notebook_B"
               NEW_STATE="A"  # 更新状态为 A
+            else
+              NOTEBOOK_TITLE="notebook_A"  # 如果状态异常，默认使用 A
+              NEW_STATE="B"
             fi
           else
             NOTEBOOK_TITLE="notebook_C"
@@ -59,24 +62,25 @@ jobs:
           echo "NOTEBOOK_TITLE=${NOTEBOOK_TITLE}" >> $GITHUB_ENV
           echo "${NEW_STATE:-$STATE}" > notebook_state.txt  # 保存状态到文件
 
-      - name: Commit updated state  # Commit the updated state file to the repository
+      - name: Commit updated state  # 提交更新的状态文件
         if: github.event_name == 'schedule'
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add notebook_state.txt
-          git commit -m "Update notebook state to ${NEW_STATE:-$STATE}"
-          git push
+          if [ -n "$(git status --porcelain)" ]; then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add notebook_state.txt
+            git commit -m "Update notebook state to ${NEW_STATE:-$STATE}"
+            git push
+          else
+            echo "No changes to commit."
+          fi
 
       - name: Prepare and Push Notebook  # 准备并推送 Notebook
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
           if [ "${NOTEBOOK_TITLE}" = "notebook_C" ]; then
             NOTEBOOK_DIR="notebook_C"
-            if [ -d "${NOTEBOOK_DIR}" ]; then
-              echo "Removing old ${NOTEBOOK_DIR} directory"
-              rm -rf ${NOTEBOOK_DIR}
-            fi
+            rm -rf ${NOTEBOOK_DIR}  # 删除旧的 notebook_C 目录（如果存在）
           else
             NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           fi
