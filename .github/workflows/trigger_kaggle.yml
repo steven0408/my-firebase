@@ -8,6 +8,9 @@ on:
     - cron: '0 */9 * * *'  # 定时任务，每9小时触发一次
   workflow_dispatch:  # 允许手动触发
 
+permissions:
+  contents: write  # 允许推送到仓库
+
 jobs:
   run-notebooks:
     runs-on: ubuntu-latest  # 在最新的 Ubuntu 环境上运行
