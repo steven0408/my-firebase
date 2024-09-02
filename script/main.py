@@ -115,33 +115,34 @@ def on_data_change(event):
         # 处理数据变动
         data = event.data
         if data.get('source') == 'JS':
+            sound = data.get('sound')
             content = data.get('content')
             history = data.get('history')
             if content:
                 response, emotion, history = fetch_data(content, history)
                 if response:
                     write_data(event.path, response, emotion, history)
-                    
-                    # 检查 Kernel 状态
-                    api = KaggleApi()
-                    api.authenticate()
-
-                    max_attempts = 60
-                    attempts = 0
-                    
-                    while True:
-                        try:
-                            status = api.kernel_status('woolen', 'notebook8edc990443')
-                            print(f"Kernel status: {status['status']}")
-                            if status['status'] == 'complete':
-                                output = api.kernel_output('woolen', 'notebook8edc990443')
-                                print('output:',output)
+                    if sound:
+                        # 检查 Kernel 状态
+                        api = KaggleApi()
+                        api.authenticate()
+    
+                        max_attempts = 60
+                        attempts = 0
+                        
+                        while True:
+                            try:
+                                status = api.kernel_status('woolen', 'notebook8edc990443')
+                                print(f"Kernel status: {status['status']}")
+                                if status['status'] == 'complete':
+                                    output = api.kernel_output('woolen', 'notebook8edc990443')
+                                    print('output:',output)
+                                    break
+                                time.sleep(60)
+                                attempts += 1 # 每分钟检查一次
+                            except Exception as e:
+                                print(f"An error occurred: {e}")
                                 break
-                            time.sleep(60)
-                            attempts += 1 # 每分钟检查一次
-                        except Exception as e:
-                            print(f"An error occurred: {e}")
-                            break
 
 
 def write_data(key, response, emotion, history):
