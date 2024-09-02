@@ -114,7 +114,7 @@ def on_data_change(event):
 
         # 处理数据变动
         data = event.data
-        if data.get('source') == 'JS':
+        if data.get('source') == 'python':
             sound = data.get('sound')
             content = data.get('content')
             history = data.get('history')
