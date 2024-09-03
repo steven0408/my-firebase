@@ -108,6 +108,7 @@ def fetch_data(content, history):
 # 定义数据变化处理函数
 def on_data_change(event):
     global last_data_change_time
+    print(last_data_change_time)
     if event.data:
         # 更新上次数据变化时间
         last_data_change_time = time.time()
