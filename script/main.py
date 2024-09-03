@@ -42,9 +42,14 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 api = KaggleApi()
 api.authenticate()
 
+# 設置數據集名稱和下載目錄
 dataset_name = 'woolen/woolen8edc990443'
 download_dir = '/kaggle/working/woolen8edc990443'
+
+# 創建下載目錄（如果不存在的話）
 os.makedirs(download_dir, exist_ok=True)
+
+# 下載並解壓數據集
 api.dataset_download_files(dataset_name, path=download_dir, unzip=True)
 
 # 設定基礎標題和其他配置
@@ -77,7 +82,7 @@ push_command = ['kaggle', 'kernels', 'push', '-p', download_dir]
 
 try:
     subprocess.run(push_command, check=True)
-    print(f"Successfully pushed the kernel from {notebook_directory}")
+    print(f"Successfully pushed the kernel from {download_dir}")
 except subprocess.CalledProcessError as e:
     print(f"Error occurred while pushing the kernel: {e}")
 
