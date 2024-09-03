@@ -42,13 +42,13 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 api = KaggleApi()
 api.authenticate()
 
-dataset_name = 'woolen/woolen-database'
-download_dir = '/kaggle/working/woolen-database'
+dataset_name = 'woolen/woolen8edc990443'
+download_dir = '/kaggle/working/woolen8edc990443'
 os.makedirs(download_dir, exist_ok=True)
 api.dataset_download_files(dataset_name, path=download_dir, unzip=True)
 
 # Fetch the service account key JSON file contents
-cred = credentials.Certificate('/kaggle/working/woolen-database/adminsdk.json')
+cred = credentials.Certificate('/kaggle/working/woolen8edc990443/adminsdk.json')
 
 # Initialize the app with a service account, granting admin privileges
 firebase_admin.initialize_app(cred, {
