@@ -47,6 +47,40 @@ download_dir = '/kaggle/working/woolen8edc990443'
 os.makedirs(download_dir, exist_ok=True)
 api.dataset_download_files(dataset_name, path=download_dir, unzip=True)
 
+# 設定基礎標題和其他配置
+base_title = "Voice Task"
+current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+kernel_id = "woolen/notebook8edc990443"  # 替換為你的 Kernel ID
+
+# 創建帶有時間戳的標題
+title_with_timestamp = f"{base_title}_{current_time}"
+
+# 更新 kernel.json 的內容
+kernel_config = {
+    "id": kernel_id,
+    "title": title_with_timestamp,
+    "language": "python",
+    "kernel_type": "script",
+    "license": "mit",
+    "tags": ["tag1", "tag2"],
+    "enable_gpu": True,
+    "enable_internet": True
+}
+
+# 保存 kernel.json 文件
+kernel_json_path = os.path.join(download_dir, 'kernel.json')
+with open(kernel_json_path, 'w') as f:
+    json.dump(kernel_config, f, indent=4)
+
+# 執行 kaggle kernels push 命令
+push_command = ['kaggle', 'kernels', 'push', '-p', download_dir]
+
+try:
+    subprocess.run(push_command, check=True)
+    print(f"Successfully pushed the kernel from {notebook_directory}")
+except subprocess.CalledProcessError as e:
+    print(f"Error occurred while pushing the kernel: {e}")
+
 # Fetch the service account key JSON file contents
 cred = credentials.Certificate('/kaggle/working/woolen8edc990443/adminsdk.json')
 
