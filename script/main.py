@@ -218,7 +218,7 @@ class Gemini:
         api_key = 'AIzaSyBtY513gNRPNRzyfrqYQFot11ixSGxeA2w'
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel("gemini-1.5-flash")
-        self.chat_rule = [{"role": "user", "parts": "請使用女性友人的語氣和我對話"}]
+        self.chat_rule = [{"role": "user", "parts": "請使用女性友人的語氣和我對話，並盡量不要超過 100 字"}]
         self.emotion_rule = [{"role": "user", "parts": "請判斷以下對話的情緒屬於下列哪一種 : [喜, 怒, 哀, 樂, 中性]，只需要回答框框內的文字"}]
         self.chat_history = history
 
