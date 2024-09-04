@@ -38,6 +38,7 @@ except ImportError as e:
 os.environ['KAGGLE_USERNAME'] = "woolen"
 os.environ['KAGGLE_KEY'] = "5eed2f6ca0fcac029f78dea97cd20b0e"
 
+import kaggle
 from kaggle.api.kaggle_api_extended import KaggleApi
 # 初始化 Kaggle API
 api = KaggleApi()
