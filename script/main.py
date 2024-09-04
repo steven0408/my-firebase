@@ -55,7 +55,7 @@ api.dataset_download_files(dataset_name, path=download_dir, unzip=True)
 
 # 設定基礎標題和其他配置
 base_title = "Voice Task"
-current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 kernel_id = "woolen/notebook8edc990443"  # 替換為你的 Kernel ID
 
 # 創建帶有時間戳的標題
