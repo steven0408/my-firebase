@@ -63,8 +63,8 @@ title_with_timestamp = f"{base_title}_{current_time}"
 
 # 更新 kernel.json 的內容
 kernel_config = {
-    "id": woolen/notebook8edc990443,
-    "title": Voice Task,
+    "id": "woolen/notebook8edc990443",
+    "title": "Voice Task",
     "code_file": "notebook8edc990443.py",
     "language": "python",
     "kernel_type": "script",
