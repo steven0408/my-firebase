@@ -59,7 +59,7 @@ jobs:
               NEW_STATE="B"
             fi
           else
-            NOTEBOOK_TITLE="notebook_E"  # 手动执行时使用 notebook_D
+            NOTEBOOK_TITLE="notebook_F"  # 手动执行时使用 notebook_D
           fi
           
           echo "NOTEBOOK_TITLE=${NOTEBOOK_TITLE}" >> $GITHUB_ENV
