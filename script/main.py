@@ -166,8 +166,10 @@ def on_data_change(event):
                         
                         while attempts < max_attempts:
                             try:
-                                subprocess.run(push_command, check=True)
+                                result = subprocess.run(push_command, check=True, capture_output=True, text=True)
                                 print(f"Successfully pushed the kernel from {download_dir}")
+                                print(f"Command output: {result.stdout}")
+                                break  # 成功后跳出循环
                             except subprocess.CalledProcessError as e:
                                 attempts += 1
                                 print(f"Error occurred while pushing the kernel (attempt {attempts}/{max_attempts}): {e}")
