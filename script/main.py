@@ -61,7 +61,7 @@ kernel_id = "woolen/notebook8edc990443"  # 替換為你的 Kernel ID
 # 創建帶有時間戳的標題
 title_with_timestamp = f"{base_title}_{current_time}"
 
-# 更新 kernel.json 的內容
+# 更新 kernel-metadata.json 的內容
 kernel_config = {
     "id": "woolen/notebook8edc990443",
     "title": title_with_timestamp,
@@ -75,7 +75,7 @@ kernel_config = {
 }
 
 # 保存 kernel.json 文件
-kernel_json_path = os.path.join(download_dir, 'kernel.json')
+kernel_json_path = os.path.join(download_dir, 'kernel-metadata.json')
 with open(kernel_json_path, 'w') as f:
     json.dump(kernel_config, f, indent=4)
 
