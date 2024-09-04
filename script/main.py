@@ -168,6 +168,7 @@ def on_data_change(event):
                         while attempts < max_attempts:
                             try:
                                 result = subprocess.run(push_command, check=True, capture_output=True, text=True)
+                                kaggle.api.kernel_delete('woolen/notebook8edc990443')
                                 print(f"Successfully pushed the kernel from {download_dir}")
                                 print(f"Command output: {result.stdout}")
                                 break  # 成功后跳出循环
