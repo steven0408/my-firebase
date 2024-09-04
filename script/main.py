@@ -169,9 +169,9 @@ def on_data_change(event):
                                 subprocess.run(push_command, check=True)
                                 print(f"Successfully pushed the kernel from {download_dir}")
                             except subprocess.CalledProcessError as e:
-                                attempt += 1
-                                print(f"Error occurred while pushing the kernel (attempt {attempt}/{max_attempts}): {e}")
-                                if attempt < max_retries:
+                                attempts += 1
+                                print(f"Error occurred while pushing the kernel (attempt {attempts}/{max_attempts}): {e}")
+                                if attempts < max_attempts:
                                     print(f"Retrying in 30 seconds...")
                                     time.sleep(30)
                                 else:
