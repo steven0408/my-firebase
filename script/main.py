@@ -7,6 +7,7 @@ import threading
 import subprocess
 import importlib.metadata
 import google.generativeai as genai
+from datetime import datetime
 from google.generativeai.types.generation_types import StopCandidateException
 
 # Ensure required packages are installed
