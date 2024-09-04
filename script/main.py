@@ -81,12 +81,6 @@ with open(kernel_json_path, 'w') as f:
 # 執行 kaggle kernels push 命令
 push_command = ['kaggle', 'kernels', 'push', '-p', download_dir]
 
-try:
-    subprocess.run(push_command, check=True)
-    print(f"Successfully pushed the kernel from {download_dir}")
-except subprocess.CalledProcessError as e:
-    print(f"Error occurred while pushing the kernel: {e}")
-
 # Fetch the service account key JSON file contents
 cred = credentials.Certificate('/kaggle/working/woolen8edc990443/adminsdk.json')
 
@@ -167,22 +161,21 @@ def on_data_change(event):
                         api = KaggleApi()
                         api.authenticate()
     
-                        max_attempts = 60
+                        max_attempts = 10
                         attempts = 0
                         
-                        while True:
+                        while attempts < max_attempts:
                             try:
-                                status = api.kernel_status('woolen', 'notebook8edc990443')
-                                print(f"Kernel status: {status['status']}")
-                                if status['status'] == 'complete':
-                                    output = api.kernel_output('woolen', 'notebook8edc990443')
-                                    print('output:',output)
-                                    break
-                                time.sleep(60)
-                                attempts += 1 # 每分钟检查一次
-                            except Exception as e:
-                                print(f"An error occurred: {e}")
-                                break
+                                subprocess.run(push_command, check=True)
+                                print(f"Successfully pushed the kernel from {download_dir}")
+                            except subprocess.CalledProcessError as e:
+                                attempt += 1
+                                print(f"Error occurred while pushing the kernel (attempt {attempt}/{max_attempts}): {e}")
+                                if attempt < max_retries:
+                                    print(f"Retrying in 30 seconds...")
+                                    time.sleep(30)
+                                else:
+                                    print("Max retries reached. Giving up.")
 
 
 def write_data(key, response, emotion, history):
