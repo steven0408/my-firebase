@@ -171,6 +171,8 @@ def on_data_change(event):
                             except subprocess.CalledProcessError as e:
                                 attempts += 1
                                 print(f"Error occurred while pushing the kernel (attempt {attempts}/{max_attempts}): {e}")
+                                print(f"Command output: {e.output}")
+                                print(f"Command stderr: {e.stderr}")
                                 if attempts < max_attempts:
                                     print(f"Retrying in 30 seconds...")
                                     time.sleep(30)
