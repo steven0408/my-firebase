@@ -159,10 +159,6 @@ def on_data_change(event):
                 if response:
                     write_data(event.path, response, emotion, history)
                     if sound:
-                        # 检查 Kernel 状态
-                        api = KaggleApi()
-                        api.authenticate()
-    
                         max_attempts = 10
                         attempts = 0
                         
