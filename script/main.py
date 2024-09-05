@@ -54,35 +54,6 @@ os.makedirs(download_dir, exist_ok=True)
 # 下載並解壓數據集
 api.dataset_download_files(dataset_name, path=download_dir, unzip=True)
 
-# 設定基礎標題和其他配置
-base_title = "Voice Task"
-current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-kernel_id = "woolen/notebook8edc990443"  # 替換為你的 Kernel ID
-
-# 創建帶有時間戳的標題
-title_with_timestamp = f"{base_title}_{current_time}"
-
-# 更新 kernel-metadata.json 的內容
-kernel_config = {
-    "id": "woolen/notebook8edc990443",
-    "title": title_with_timestamp,
-    "code_file": "notebook8edc990443.py",
-    "language": "python",
-    "kernel_type": "script",
-    "license": "mit",
-    "tags": ["tag1", "tag2"],
-    "enable_gpu": True,
-    "enable_internet": True
-}
-
-# 保存 kernel.json 文件
-kernel_json_path = os.path.join(download_dir, 'kernel-metadata.json')
-with open(kernel_json_path, 'w') as f:
-    json.dump(kernel_config, f, indent=4)
-
-# 執行 kaggle kernels push 命令
-push_command = ['kaggle', 'kernels', 'push', '-p', download_dir]
-
 # Fetch the service account key JSON file contents
 cred = credentials.Certificate('/kaggle/working/woolen8edc990443/adminsdk.json')
 
@@ -144,6 +115,7 @@ def fetch_data(content, history):
 # 定义数据变化处理函数
 def on_data_change(event):
     global last_data_change_time
+    global previous_sound  # 使用全局變量保存 sound
     if event.data:
         # 更新上次数据变化时间
         last_data_change_time = time.time()
@@ -151,7 +123,11 @@ def on_data_change(event):
         # 处理数据变动
         data = event.data
         if data.get('source') == 'JS':
-            sound = data.get('sound')
+            # 如果 sound 是 None，則使用上次的 sound 值
+            if sound is None:
+                sound = previous_sound
+            else:
+                previous_sound = sound  # 更新 previous_sound
             content = data.get('content')
             history = data.get('history')
             if content:
@@ -165,6 +141,34 @@ def on_data_change(event):
                         
                         while attempts < max_attempts:
                             try:
+                                # 設定基礎標題和其他配置
+                                base_title = "Voice Task"
+                                current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                                kernel_id = "woolen/notebook8edc990443"  # 替換為你的 Kernel ID
+                                
+                                # 創建帶有時間戳的標題
+                                title_with_timestamp = f"{base_title}_{current_time}"
+                                
+                                # 更新 kernel-metadata.json 的內容
+                                kernel_config = {
+                                    "id": "woolen/notebook8edc990443",
+                                    "title": title_with_timestamp,
+                                    "code_file": "notebook8edc990443.py",
+                                    "language": "python",
+                                    "kernel_type": "script",
+                                    "license": "mit",
+                                    "tags": ["tag1", "tag2"],
+                                    "enable_gpu": True,
+                                    "enable_internet": True
+                                }
+                                
+                                # 保存 kernel.json 文件
+                                kernel_json_path = os.path.join(download_dir, 'kernel-metadata.json')
+                                with open(kernel_json_path, 'w') as f:
+                                    json.dump(kernel_config, f, indent=4)
+                                
+                                # 執行 kaggle kernels push 命令
+                                push_command = ['kaggle', 'kernels', 'push', '-p', download_dir]
                                 result = subprocess.run(push_command, check=True, capture_output=True, text=True)
                                 print(f"Successfully pushed the kernel from {download_dir}")
                                 print(f"Command output: {result.stdout}")
