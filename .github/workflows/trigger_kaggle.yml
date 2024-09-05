@@ -37,7 +37,7 @@ jobs:
         id: determine-title
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          NOTEBOOK_TITLE="notebook_${TIMESTAMP}:Manage Kaggle Notebooks"
+          NOTEBOOK_TITLE="notebook_${TIMESTAMP}"
           
           echo "NOTEBOOK_TITLE=${NOTEBOOK_TITLE}" >> $GITHUB_ENV
       
