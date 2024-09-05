@@ -158,6 +158,7 @@ def on_data_change(event):
                 response, emotion, history = fetch_data(content, history)
                 if response:
                     write_data(event.path, response, emotion, history)
+                    print('sound: ', sound)
                     if sound:
                         max_attempts = 10
                         attempts = 0
