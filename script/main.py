@@ -124,6 +124,7 @@ def on_data_change(event):
         data = event.data
         if data.get('source') == 'JS':
             # 如果 sound 是 None，則使用上次的 sound 值
+            sound = data.get('sound')
             if sound is None:
                 sound = previous_sound
             else:
