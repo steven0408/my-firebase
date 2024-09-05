@@ -37,11 +37,7 @@ jobs:
         id: determine-title
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            NOTEBOOK_TITLE="notebook_${TIMESTAMP}:Manage Kaggle Notebooks"
-          else
-            NOTEBOOK_TITLE="notebook_${TIMESTAMP}:Manual Execution"
-          fi
+          NOTEBOOK_TITLE="notebook_${TIMESTAMP}:Manage Kaggle Notebooks"
           
           echo "NOTEBOOK_TITLE=${NOTEBOOK_TITLE}" >> $GITHUB_ENV
       
