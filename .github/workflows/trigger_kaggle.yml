@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 */9 * * *'  # 定时任务，每9小时触发一次
+    - cron: '0 */12 * * *'  # 定时任务，每9小时触发一次
   workflow_dispatch:  # 允许手动触发
 
 permissions:
