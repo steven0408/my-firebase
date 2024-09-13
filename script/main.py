@@ -101,9 +101,9 @@ def fetch_data(content, history, charactor):
     try:
         # 假设 gemini.chat 是一个函数，可以处理内容并返回响应和情感
         if history == 'null':
-            gemini = Gemini(history=[], charactor)
+            gemini = Gemini(history=[], charactor=charactor)
         else:
-            gemini = Gemini(history=history, charactor)
+            gemini = Gemini(history=history, charactor=charactor)
 
         response, emotion, history = gemini.chat(content)
         
