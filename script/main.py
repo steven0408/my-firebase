@@ -116,6 +116,7 @@ def fetch_data(content, history, charactor):
 def on_data_change(event):
     global last_data_change_time
     global previous_sound  # 使用全局變量保存 sound
+    global previous_charactor
     if event.data:
         # 更新上次数据变化时间
         last_data_change_time = time.time()
