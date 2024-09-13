@@ -97,13 +97,13 @@ def clear_database_if_idle():
 
 
 # Function to fetch data from Firebase
-def fetch_data(content, history):
+def fetch_data(content, history, charactor):
     try:
         # 假设 gemini.chat 是一个函数，可以处理内容并返回响应和情感
         if history == 'null':
-            gemini = Gemini(history=[])
+            gemini = Gemini(history=[], charactor)
         else:
-            gemini = Gemini(history=history)
+            gemini = Gemini(history=history, charactor)
 
         response, emotion, history = gemini.chat(content)
         
@@ -129,10 +129,17 @@ def on_data_change(event):
                 sound = previous_sound
             else:
                 previous_sound = sound  # 更新 previous_sound
+                
+            charactor = data.get('charactor')
+            if charactor is None:
+                charactor = previous_charactor
+            else:
+                previous_charactor = charactor  # 更新 previous_sound
+                
             content = data.get('content')
             history = data.get('history')
             if content:
-                response, emotion, history = fetch_data(content, history)
+                response, emotion, history = fetch_data(content, history, charactor)
                 if response:
                     write_data(event.path, response, emotion, history)
                     print('sound: ', sound)
@@ -216,13 +223,16 @@ def start_listener():
         
 
 class Gemini:
-    def __init__(self, history):
+    def __init__(self, history, charactor):
         api_key = 'AIzaSyBtY513gNRPNRzyfrqYQFot11ixSGxeA2w'
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel("gemini-1.5-flash")
-        self.chat_rule = [{"role": "user", "parts": "請使用女性友人的語氣和我對話，並盡量不要超過 100 字"}]
         self.emotion_rule = [{"role": "user", "parts": "請判斷以下對話的情緒屬於下列哪一種 : [anger, disgust, fear, joy, neutral, others, pled, sadness, smug, surprise]，只需要回答框框內的文字"}]
         self.chat_history = history
+        if (characror == 'A'):
+            self.chat_rule = [{"role": "user", "parts": "請使用女性友人的語氣和我對話，並盡量不要超過 100 字"}]
+        elif (characror == 'B'):
+            self.chat_rule = [{"role": "user", "parts": "請使用男性友人的語氣和我對話，並盡量不要超過 100 字"}]
 
     def chat(self, message):
         while True:
