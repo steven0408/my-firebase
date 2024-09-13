@@ -229,9 +229,9 @@ class Gemini:
         self.model = genai.GenerativeModel("gemini-1.5-flash")
         self.emotion_rule = [{"role": "user", "parts": "請判斷以下對話的情緒屬於下列哪一種 : [anger, disgust, fear, joy, neutral, others, pled, sadness, smug, surprise]，只需要回答框框內的文字"}]
         self.chat_history = history
-        if (characror == 'A'):
+        if (charactor == 'A'):
             self.chat_rule = [{"role": "user", "parts": "請使用女性友人的語氣和我對話，並盡量不要超過 100 字"}]
-        elif (characror == 'B'):
+        elif (charactor == 'B'):
             self.chat_rule = [{"role": "user", "parts": "請使用男性友人的語氣和我對話，並盡量不要超過 100 字"}]
 
     def chat(self, message):
