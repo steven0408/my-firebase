@@ -21,9 +21,11 @@ jobs:
     steps:
       - name: Checkout code  # 检出当前的代码仓库
         uses: actions/checkout@v3
-
-      - name: Install dependencies  # 安装依赖
+      
+      - name: Set up Python environment  # 创建并激活虚拟环境
         run: |
+          python -m venv venv
+          source venv/bin/activate
           python -m pip install --upgrade pip
           pip install kaggle
 
