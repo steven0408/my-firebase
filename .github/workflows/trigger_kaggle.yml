@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Checkout code  # 检出当前的代码仓库
         uses: actions/checkout@v3
-      
+
       - name: Set up Python environment  # 创建并激活虚拟环境
         run: |
           python -m venv venv
@@ -34,17 +34,21 @@ jobs:
           mkdir -p ~/.kaggle
           echo "${{ secrets.KAGGLE_JSON }}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
 
       - name: Determine Notebook Title  # 确定 Notebook 标题
         id: determine-title
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+          echo "TIMESTAMP=${TIMESTAMP}" >> $GITHUB_ENV
           NOTEBOOK_TITLE="notebook_${TIMESTAMP}"
-          
           echo "NOTEBOOK_TITLE=${NOTEBOOK_TITLE}" >> $GITHUB_ENV
-      
+
       - name: Prepare and Push Notebook  # 准备并推送 Notebook
         run: |
+          source venv/bin/activate  # 再次激活虚拟环境
           NOTEBOOK_DIR="notebook_${TIMESTAMP}"
           
           echo "Creating directory: ${NOTEBOOK_DIR}"
@@ -58,3 +62,6 @@ jobs:
           sed -i "s/\"title\": \".*\"/\"title\": \"${NOTEBOOK_TITLE}\"/" ${NOTEBOOK_DIR}/kernel-metadata.json
           
           kaggle kernels push -p ${NOTEBOOK_DIR} || { echo "Failed to push notebook to Kaggle"; exit 1; }
+        env:
+          TIMESTAMP: ${{ env.TIMESTAMP }}  # 确保 TIMESTAMP 被传递
+          NOTEBOOK_TITLE: ${{ env.NOTEBOOK_TITLE }}
